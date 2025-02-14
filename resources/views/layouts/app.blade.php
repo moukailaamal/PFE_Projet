@@ -7,7 +7,7 @@
 <body>
 
     @include('layouts.partials.sidebar')   <!-- Ajoute la sidebar -->
-    @include('partials.analytics')
+    @include('layouts.partials.analytics')
 
     <div class="content">
         @yield('content')   <!-- Contenu spécifique de chaque page -->

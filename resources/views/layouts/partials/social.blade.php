@@ -1,18 +1,19 @@
-{{ "<!-- Twitter -->" | safeHTML }}
-<meta name="twitter:card" content="{{ if .IsHome }}summary_large_image{{ else }}summary{{ end }}">
-<meta name="twitter:site" content="@{{ .Site.Params.twitter }}">
-<meta name="twitter:creator" content="@{{ .Site.Params.twitter }}">
-<meta name="twitter:title" content="{{ .Title | markdownify }}">
-<meta name="twitter:description" content="{{ .Page.Params.description | default .Site.Params.description | markdownify }}">
-<meta name="twitter:image" content="{{ if .IsHome }}{{ .Site.Params.social_logo_path | absURL }}{{ else }}{{ .Site.Params.social_image_path | absURL }}{{ end }}">
+<!-- Twitter -->
+{!! "<!-- Twitter -->" !!}
 
-{{ "<!-- Facebook -->" | safeHTML }}
-<meta property="og:url" content="{{ .Permalink }}">
-<meta property="og:title" content="{{ .Title | markdownify }}">
-<meta property="og:description" content="{{ .Page.Params.description | default .Site.Params.description | markdownify }}">
-<meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
-<meta property="og:image" content="{{ .Site.Params.social_image_path | absURL }}">
+<meta name="twitter:card" content="{{ request()->routeIs('home') ? 'summary_large_image' : 'summary' }}">
+<meta name="twitter:site" content="@{{ config('app.twitter') }}">
+<meta name="twitter:creator" content="@{{ config('app.twitter') }}">
+<meta name="twitter:title" content="{{ isset($title) ? $title : 'Default Title' }}">
+<meta name="twitter:description" content="{{ $description ?? config('app.description') }}">
+<meta name="twitter:image" content="{{ request()->routeIs('home') ? asset(config('app.social_logo_path')) : asset(config('app.social_image_path')) }}">
+
+<!-- Facebook -->
+{!! "<!-- Facebook -->" !!}
+
+<meta property="og:url" content="{{ url()->current() }}">
+<meta name="twitter:title" content="{{ isset($title) ? $title : 'Default Title' }}">
+<meta property="og:description" content="{{ $description ?? config('app.description') }}">
+<meta property="og:type" content="{{ request()->routeIs('page') ? 'article' : 'website' }}">
+<meta property="og:image" content="{{ asset(config('app.social_image_path')) }}">
 <meta property="og:image:type" content="image/png">
-
-
-
