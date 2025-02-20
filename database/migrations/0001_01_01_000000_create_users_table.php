@@ -17,11 +17,11 @@ return new class extends Migration
             $table->string('last_name', 100);
             $table->string('email', 150)->unique();
             $table->string('password');
-            $table->enum('role', ['client', 'technician', 'admin'])->default('client');
+            $table->enum('role', ['client', 'technician', 'admin']);
             $table->enum('gender', ['male', 'female', 'other']); 
             $table->string('address', 255)->nullable(); 
             $table->string('phone_number', 15)->nullable(); 
-            $table->enum('status', ['active', 'inactive'])->default('inactive');
+            $table->enum('status', ['active', 'inactive']);
             $table->dateTime('registration_date');
             $table->timestamps();
 

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class TechnicienDetail extends Model
 {
     protected $fillable = [
-        'user_id', 'specialite', 'tarif', 'disponibilite', 'certifications', 'description'
+        'user_id', 'specialite', 'tarif', 'disponibilite', 'certifications', 'description', 'certificat_path', 'identite_path', 'verification_status'
     ];
     public function user()
     {
