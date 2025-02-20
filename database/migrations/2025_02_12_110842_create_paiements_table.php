@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('paiements', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('reservation_id')->constrained('reservations');  // Liaison avec reservations
-            $table->decimal('montant', 8, 2);
-            $table->enum('moyen_paiement', ['en_ligne', 'espèces']);
-            $table->enum('statut', ['payé', 'en_attente', 'remboursé']);
-            $table->dateTime('date_paiement');
+            $table->foreignId('reservation_id')->constrained('reservations');
+$table->decimal('amount', 8, 2);
+$table->enum('payment_method', ['online', 'cash']);
+$table->enum('status', ['paid', 'pending', 'refunded']);
+$table->dateTime('payment_date');
+
             $table->timestamps();
         });
     }

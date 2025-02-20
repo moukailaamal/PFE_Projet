@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('techniciens_details', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users');  // Liaison avec la table users
-            $table->string('specialite', 100);
-            $table->decimal('tarif', 8, 2);
-            $table->text('disponibilite');
+            $table->foreignId('user_id')->constrained('users');
+            $table->string('specialty', 100);
+            $table->decimal('rate', 8, 2);//tarif
+            $table->text('availability');
             $table->string('certifications', 255);
             $table->text('description');
+            
             $table->timestamps();
         });
     }

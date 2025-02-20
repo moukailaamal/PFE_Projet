@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('services', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('technicien_id')->constrained('users');  // Liaison avec la table users
-            $table->foreignId('categorie_id')->constrained('categories_services');  // Liaison avec categories_services
-            $table->string('titre', 150);
+            $table->foreignId('technician_id')->constrained('users');
+            $table->foreignId('category_id')->constrained('categories_services');
+            $table->string('title', 150);
             $table->text('description');
-            $table->decimal('tarif', 8, 2);
-            $table->dateTime('date_creation');
+            $table->decimal('rate', 8, 2);
+            $table->dateTime('creation_date');
+            
             $table->timestamps();
         });
     }

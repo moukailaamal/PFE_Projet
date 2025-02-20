@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('reservation_id')->constrained('reservations');  // Liaison avec reservations
-            $table->foreignId('envoyeur_id')->constrained('users');  // Liaison avec la table users
-            $table->text('contenu');
-            $table->dateTime('date_envoi');
+            $table->foreignId('reservation_id')->constrained('reservations');
+            $table->foreignId('sender_id')->constrained('users');
+            $table->text('content');
+            $table->dateTime('send_date');
+            
             $table->timestamps();
         });
     }

@@ -4,10 +4,11 @@
 @section('content')
   <header class="py-5 border-bottom">
     <div class="container pt-md-1 pb-md-4">
-      <h1 class="bd-title mt-0">{{ $title }}</h1>  <!-- Remplace .Title par la variable Blade -->
+
+      <h1 class="bd-title mt-0">{{ $title }}</h1>  
       <p class="bd-lead">{{ $description }}</p>  <!-- Remplace .Page.Params.Description -->
       
-      @if ($title == 'Examples')  <!-- Utilise Blade pour la condition -->
+      @if ($title == 'Examples') 
         <div class="d-flex flex-column flex-sm-row">
           <a href="{{ $downloadLink }}" class="btn btn-lg btn-bd-primary" onclick="ga('send', 'event', 'Examples', 'Hero', 'Download Examples');">
             Download examples

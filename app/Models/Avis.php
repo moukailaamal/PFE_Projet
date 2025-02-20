@@ -10,13 +10,13 @@ class Avis extends Model
     use HasFactory;
 
     protected $fillable = [
-        'reservation_id', 'client_id', 'technicien_id', 'note', 'commentaire', 'date_avis'
+        'reservation_id', 'client_id', 'technician_id', 'rating', 'comment', 'review_date'
     ];
-
+    
     protected $casts = [
-        'date_avis' => 'datetime',
+        'review_date' => 'datetime',
     ];
-
+    
     public function reservation()
     {
         return $this->belongsTo(Reservation::class);
@@ -29,6 +29,6 @@ class Avis extends Model
 
     public function technicien()
     {
-        return $this->belongsTo(User::class, 'technicien_id');
+        return $this->belongsTo(User::class, 'technician_id');
     }
 }

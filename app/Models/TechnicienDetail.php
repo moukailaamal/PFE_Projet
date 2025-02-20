@@ -9,7 +9,6 @@ class TechnicienDetail extends Model
     protected $fillable = [
         'user_id', 'specialite', 'tarif', 'disponibilite', 'certifications', 'description'
     ];
-
     public function user()
     {
         return $this->belongsTo(User::class);

@@ -10,11 +10,11 @@ class Message extends Model
     use HasFactory;
 
     protected $fillable = [
-        'reservation_id', 'envoyeur_id', 'contenu', 'date_envoi'
+        'reservation_id', 'sender_id', 'content', 'send_date'
     ];
 
     protected $casts = [
-        'date_envoi' => 'datetime',
+        'send_date' => 'datetime',
     ];
 
     public function reservation()
@@ -22,8 +22,8 @@ class Message extends Model
         return $this->belongsTo(Reservation::class);
     }
 
-    public function envoyeur()
+    public function sender()
     {
-        return $this->belongsTo(User::class, 'envoyeur_id');
+        return $this->belongsTo(User::class, 'sender_id');
     }
 }

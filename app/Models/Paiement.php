@@ -10,11 +10,11 @@ class Paiement extends Model
     use HasFactory;
 
     protected $fillable = [
-        'reservation_id', 'montant', 'moyen_paiement', 'statut', 'date_paiement'
+        'reservation_id', 'amount', 'payment_method', 'status', 'payment_date'
     ];
 
     protected $casts = [
-        'date_paiement' => 'datetime',
+        'payment_date' => 'datetime',
     ];
 
     public function reservation()

@@ -10,12 +10,12 @@ class Reservation extends Model
     use HasFactory;
 
     protected $fillable = [
-        'client_id', 'technicien_id', 'service_id', 'date_rdv', 'statut', 'date_creation'
+        'client_id', 'technician_id', 'service_id', 'appointment_date', 'status', 'creation_date'
     ];
 
     protected $casts = [
-        'date_rdv' => 'datetime',
-        'date_creation' => 'datetime',
+        'appointment_date' => 'datetime',
+        'creation_date' => 'datetime',
     ];
 
     public function client()

@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('reservations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('client_id')->constrained('users');  // Liaison avec la table users
-        $table->foreignId('technicien_id')->constrained('users');  // Liaison avec la table users
-        $table->foreignId('service_id')->constrained('services');  // Liaison avec services
-        $table->dateTime('date_rdv');
-        $table->enum('statut', ['en_attente', 'confirmée', 'annulée', 'terminée']);
-        $table->dateTime('date_creation');
+            $table->foreignId('client_id')->constrained('users');
+            $table->foreignId('technician_id')->constrained('users');
+            $table->foreignId('service_id')->constrained('services');
+            $table->dateTime('appointment_date');
+            $table->enum('status', ['pending', 'confirmed', 'canceled', 'completed']);
+            $table->dateTime('creation_date');
+            
             $table->timestamps();
         });
     }

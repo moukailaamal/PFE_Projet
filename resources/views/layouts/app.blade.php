@@ -5,9 +5,11 @@
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 </head>
 <body>
+    @include('layouts.partials.header')
+    @include('layouts.partials.stylesheet')
+    @include('layouts.partials.navbar-dashboard')  
+    @include('layouts.partials.sidebar')   
 
-    @include('layouts.partials.sidebar')   <!-- Ajoute la sidebar -->
-    @include('layouts.partials.analytics')
 
     <div class="content">
         @yield('content')   <!-- Contenu spécifique de chaque page -->
