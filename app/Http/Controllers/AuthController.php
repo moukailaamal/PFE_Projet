@@ -20,21 +20,22 @@ class AuthController extends Controller
     }
 
     // Gérer la soumission du formulaire de connexion
-    public function login(Request $request)
-    {
-        // Validation des données de connexion
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|min:6',
-        ]);
+public function login(Request $request)
+{
+    // Validation des données de connexion
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required|string',  // validation plus générale pour le mot de passe
+    ]);
 
-        // Tentative de connexion de l'utilisateur
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-            return redirect()->intended('/dashboard'); // Redirige vers la page d'accueil ou tableau de bord
-        }
-
-        return back()->withErrors(['email' => 'Les informations d\'identification sont incorrectes.']);
+    // Tentative de connexion de l'utilisateur
+    if (Auth::attempt(['email' => $request->email, 'password' => $request->password], $request->remember)) {
+        return redirect()->intended('/exemple'); // Redirige vers la page d'accueil ou tableau de bord
     }
+
+    return back()->withErrors(['email' => 'Les informations d\'identification sont incorrectes.']);
+}
+
 
     // Afficher le formulaire d'inscription de client
     public function showRegistrationFormClient()
@@ -46,8 +47,7 @@ class AuthController extends Controller
     public function registerClient(Request $request)
     {
         $request->validate([
-            'certificat' => 'required|mimes:pdf,jpg,png|max:2048',
-            'identite' => 'required|mimes:pdf,jpg,png|max:2048',
+            
             'email' => 'required|email|unique:users,email', // Vérifie que l'email est unique et valide
             'password' => 'required|string|min:8|confirmed', // Vérifie que le mot de passe est confirmé
         ], [
@@ -63,7 +63,7 @@ class AuthController extends Controller
         $auth->first_name = $request->input('first_name');
         $auth->last_name = $request->input('last_name');
         $auth->role = 'client';
-        $auth->status = 'inactive'; 
+        $auth->status = 'active'; 
         $auth->registration_date = Carbon::now();
         $auth->phone_number = $request->input('phone_number');
         $auth->address = $request->input('address');
@@ -86,19 +86,18 @@ class AuthController extends Controller
    }
 
 
-   
    public function registerTechnicien(Request $request)
    {
        $request->validate([
            'first_name' => 'required|string|max:255',
-        'last_name' => 'required|string|max:255',
-        'email' => 'required|email|unique:users,email',
-        'password' => 'required|string|min:8|confirmed',
-        'phone_number' => 'nullable|string|max:20',
-        'address' => 'nullable|string|max:255',
-        'gender' => 'nullable|string|in:male,female',
-       
-        
+           'last_name' => 'required|string|max:255',
+           'email' => 'required|email|unique:users,email',
+           'password' => 'required|string|min:8|confirmed',
+           'phone_number' => 'nullable|string|max:20',
+           'address' => 'nullable|string|max:255',
+           'gender' => 'nullable|string|in:male,female',
+           'certificat_path' => 'nullable|file|mimes:pdf,jpg,png|max:2048',
+           'identite_path' => 'nullable|file|mimes:pdf,jpg,png|max:2048',
        ], [
            'email.unique' => 'Cet email est déjà utilisé.',
            'password.min' => 'Le mot de passe doit contenir au moins 8 caractères.',
@@ -110,7 +109,7 @@ class AuthController extends Controller
        $user->first_name = $request->input('first_name');
        $user->last_name = $request->input('last_name');
        $user->role = 'technician';
-       $user->status = 'active'; 
+       $user->status = 'inactive'; 
        $user->registration_date = Carbon::now();
        $user->phone_number = $request->input('phone_number');
        $user->address = $request->input('address');
@@ -119,27 +118,27 @@ class AuthController extends Controller
        $user->password = Hash::make($request->input('password'));
        $user->save(); // ⚠️ L'ID de l'utilisateur est généré après le save()
    
-       $certificat_path = $request->file('certificat') ? $request->file('certificat')->store('public/documents/techniciens') : null;
-       $identite_path = $request->file('identite') ? $request->file('identite')->store('public/documents/techniciens') : null;
+       // 🔹 Gestion des fichiers
+       $certificat_path = $request->file('certificat_path') ? $request->file('certificat_path')->store('public/documents/techniciens') : null;
+       $identite_path = $request->file('identite_path') ? $request->file('identite_path')->store('public/documents/techniciens') : null;
+   
        // 🔹 Étape 2 : Associer les détails du technicien
-       TechnicienDetail::create([
-        'user_id' => $user->id, // Clé étrangère obligatoire
-        'specialty' => null,
-        'rate' => null,
-        'availability' => null,
-        'certifications' => null,
-        'description' => null,
-        'certificat_path' =>  null,
-        'identite_path' =>  null,
-
-    ]);
-    
+       $technician = new TechnicienDetail();
+       $technician->user_id = $user->id;  // Assigner directement l'ID de l'utilisateur
+       $technician->specialty = null;  // Tu peux remplacer ça par une valeur par défaut si nécessaire
+       $technician->rate = null;      // Idem ici, tu peux initialiser à une valeur par défaut
+       $technician->availability = null;  // Remplir avec des valeurs si besoin
+       $technician->certificat_path = $certificat_path;
+       $technician->identite_path = $identite_path;
+       $technician->save();    
    
        // 🔹 Étape 3 : Connecter et rediriger
        Auth::login($user);
    
-       return redirect()->route('register.information.Technicien.form');
+       return redirect()->route('login.form');
    }
+   
+   
    
  // Afficher le formulaire d'inscription de technicien
  public function showRegistrationFormTechnicienDetails($id)

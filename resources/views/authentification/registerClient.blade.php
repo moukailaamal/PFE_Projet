@@ -1,4 +1,6 @@
 @extends('layouts.app')
+@section('title', 'Register as a client')
+
 @section('content')
 <div class="mx-auto md:h-screen flex flex-col justify-center items-center px-6 pt-8 md:mt-0">
     <!-- Logo et Titre -->
@@ -49,6 +51,9 @@
             <div>
                 <label for="address" class="text-sm font-medium text-gray-900 block mb-2">Address</label>
                 <input type="text" name="address" id="address" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" placeholder="123 Street, City" required>
+                @error('address')
+                <div class="text-red-500">{{ $message }}</div>
+            @enderror
             </div>
         
             <!-- Sexe -->
@@ -59,12 +64,18 @@
                     <option value="female">Female</option>
                     <option value="other">Other</option>
                 </select>
+                @error('gender')
+                    <div class="text-red-500">{{ $message }}</div>
+                @enderror
             </div>
         
             <!-- Numéro de téléphone -->
             <div>
                 <label for="phone_number" class="text-sm font-medium text-gray-900 block mb-2">Phone Number</label>
                 <input type="tel" name="phone_number" id="phone_number" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" placeholder="+21623456789" required>
+                @error('phone_number')
+                <div class="text-red-500">{{ $message }}</div>
+            @enderror
             </div>
         
             <!-- Email -->

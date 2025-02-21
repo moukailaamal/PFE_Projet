@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('phone_number', 15)->nullable(); 
             $table->enum('status', ['active', 'inactive']);
             $table->dateTime('registration_date');
+            $table->rememberToken();
             $table->timestamps();
 
 

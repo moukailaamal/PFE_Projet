@@ -13,16 +13,16 @@ return new class extends Migration
     {
         Schema::create('techniciens_details', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users');
-            $table->string('specialty', 100)->nullable();
-            $table->decimal('rate', 8, 2)->nullable();
-            $table->text('availability')->nullable();
-            $table->string('certifications', 255)->nullable();
-            $table->text('description')->nullable();
-            $table->string('certificat_path')->nullable(); // Stocke le chemin du certificat
-            $table->string('identite_path')->nullable(); // Stocke le chemin de la pièce d'identité
-            $table->enum('verification_status', ['pending', 'verified', 'rejected'])->default('pending'); // État de la vérification
-            $table->timestamps();
+        $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // Clé étrangère vers la table users
+        $table->string('specialty', 100)->nullable();
+        $table->decimal('rate', 8, 2)->nullable();
+        $table->text('availability')->nullable();
+        $table->string('certifications', 255)->nullable();
+        $table->text('description')->nullable();
+        $table->string('certificat_path')->nullable(); // Stocke le chemin du certificat
+        $table->string('identite_path')->nullable(); // Stocke le chemin de la pièce d'identité
+        $table->enum('verification_status', ['pending', 'verified', 'rejected'])->default('pending'); // État de la vérification
+        $table->timestamps();
         });
     }
 
