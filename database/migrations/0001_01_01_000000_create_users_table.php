@@ -21,13 +21,14 @@ return new class extends Migration
             $table->enum('gender', ['male', 'female', 'other']); 
             $table->string('address', 255)->nullable(); 
             $table->string('phone_number', 15)->nullable(); 
-            $table->enum('status', ['active', 'inactive']);
+            $table->enum('status', ['active', 'inactive'])->default('active');
             $table->dateTime('registration_date');
-            $table->rememberToken();
+            $table->string('photo')->nullable(); // Champ pour stocker l'URL de la photo
+        
+            $table->rememberToken(); // Ce champ est séparé et gère l'authentification
             $table->timestamps();
-
-
         });
+        
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();

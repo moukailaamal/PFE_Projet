@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('title', 'Login to Your Account')
 
 @section('content')
  <div class="mx-auto md:h-screen flex flex-col justify-center items-center px-6 pt-8 md:mt-0">

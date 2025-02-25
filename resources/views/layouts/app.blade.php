@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('http://127.0.0.1:8000/css/style.css') }}">
 </head>
 <body>
     @include('layouts.partials.header')
@@ -15,9 +15,9 @@
         @yield('content')   <!-- Contenu spécifique de chaque page -->
     </div>
 
-    <script src="{{ asset('js/app.js') }}"></script>
-    <script src="{{ asset('js/charts.js') }}"></script>
-    <script src="{{ asset('js/sidebar.js') }}"></script>
+    <script src="{{ asset('http://127.0.0.1:8000/js/app.js') }}"></script>
+    <script src="{{ asset('http://127.0.0.1:8000/js/charts.js') }}"></script>
+    <script src="{{ asset('http://127.0.0.1:8000/js/sidebar.js') }}"></script>
 
 </body>
 </html>

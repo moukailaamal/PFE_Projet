@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\SitemapController;
 
 
@@ -23,3 +24,8 @@ Route::post('/register-Technicien', [AuthController::class, 'registerTechnicien'
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/register-information-Technicien-form', [AuthController::class, 'showRegistrationFormTechnicien'])->name('register.information.Technicien.form');
 Route::post('/register-information-Technicien', [AuthController::class, 'registerTechnicien'])->name('register.information.Technicien');
+
+// profile
+
+Route::get('/profile', [UserController::class, 'profile'])->name('profile.form');
+Route::put('/profile/update/{id}', [UserController::class, 'update'])->name('profile.update');

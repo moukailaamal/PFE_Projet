@@ -19,22 +19,26 @@ class AuthController extends Controller
         return view('authentification.login');
     }
 
-    // Gérer la soumission du formulaire de connexion
-public function login(Request $request)
-{
-    // Validation des données de connexion
-    $request->validate([
-        'email' => 'required|email',
-        'password' => 'required|string',  // validation plus générale pour le mot de passe
-    ]);
+    public function login(Request $request)
+    {
+        // Validation des données de connexion
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string',
+        ]);
+    
+        // Tentative de connexion de l'utilisateur
+        if (Auth::attempt(['email' => $request->email, 'password' => $request->password], $request->remember)) {
+            // Connexion réussie, redirection avec un message de succès
+            session(['id' => Auth::id()]);
 
-    // Tentative de connexion de l'utilisateur
-    if (Auth::attempt(['email' => $request->email, 'password' => $request->password], $request->remember)) {
-        return redirect()->intended('/exemple'); // Redirige vers la page d'accueil ou tableau de bord
+            return redirect()->route('profile.form')->with('success', 'Connexion réussie');
+        }
+    
+        // Échec de la connexion, retour avec un message d'erreur
+        return back()->withErrors(['email' => 'Les informations d\'identification sont incorrectes.'])->with('error', 'Échec de la connexion');
     }
-
-    return back()->withErrors(['email' => 'Les informations d\'identification sont incorrectes.']);
-}
+    
 
 
     // Afficher le formulaire d'inscription de client
@@ -84,8 +88,6 @@ public function login(Request $request)
    {
        return view('authentification.registerTechnicien');
    }
-
-
    public function registerTechnicien(Request $request)
    {
        $request->validate([
@@ -103,8 +105,8 @@ public function login(Request $request)
            'password.min' => 'Le mot de passe doit contenir au moins 8 caractères.',
            'password.confirmed' => 'Les mots de passe ne correspondent pas.',
        ]);
-   
-       // 🔹 Étape 1 : Créer l'utilisateur
+       try {
+       // Créer l'utilisateur
        $user = new User();
        $user->first_name = $request->input('first_name');
        $user->last_name = $request->input('last_name');
@@ -116,27 +118,37 @@ public function login(Request $request)
        $user->gender = $request->input('gender');
        $user->email = $request->input('email');
        $user->password = Hash::make($request->input('password'));
-       $user->save(); // ⚠️ L'ID de l'utilisateur est généré après le save()
+       $user->save(); // Sauvegarde l'utilisateur et génère son ID
    
-       // 🔹 Gestion des fichiers
-       $certificat_path = $request->file('certificat_path') ? $request->file('certificat_path')->store('public/documents/techniciens') : null;
-       $identite_path = $request->file('identite_path') ? $request->file('identite_path')->store('public/documents/techniciens') : null;
+       // Gestion des fichiers
+       $certificat_path = $request->file('certificat_path') 
+           ? $request->file('certificat_path')->store('public/documents/techniciens') 
+           : null;
+       $identite_path = $request->file('identite_path') 
+           ? $request->file('identite_path')->store('public/documents/techniciens') 
+           : null;
    
-       // 🔹 Étape 2 : Associer les détails du technicien
+       // Associer les détails du technicien
        $technician = new TechnicienDetail();
-       $technician->user_id = $user->id;  // Assigner directement l'ID de l'utilisateur
-       $technician->specialty = null;  // Tu peux remplacer ça par une valeur par défaut si nécessaire
-       $technician->rate = null;      // Idem ici, tu peux initialiser à une valeur par défaut
-       $technician->availability = null;  // Remplir avec des valeurs si besoin
+       $technician->user_id = $user->id;  // Utilise l'ID généré après la sauvegarde de l'utilisateur
+       $technician->specialty = null;  // Valeur par défaut ou à ajuster
+       $technician->rate = null;      // Valeur par défaut ou à ajuster
+       $technician->availability = null;  // À remplir si nécessaire
        $technician->certificat_path = $certificat_path;
        $technician->identite_path = $identite_path;
+
        $technician->save();    
-   
-       // 🔹 Étape 3 : Connecter et rediriger
+
+       // Connecter l'utilisateur et rediriger
        Auth::login($user);
    
-       return redirect()->route('login.form');
+       return redirect()->route('login.form')->with('status', 'Inscription réussie !');
+    } catch (\Exception $e) {
+ // Message d'erreur
+ return redirect()->back()->with('error', 'Échec de l\'inscription. Veuillez réessayer.');
    }
+}
+   
    
    
    
@@ -149,37 +161,6 @@ public function login(Request $request)
  }
 
 
- 
- public function registerTechnicienDetails(Request $request,$id)
- {
-    $request->validate([
-        'specialty' => 'required|string|max:100',
-        'rate' => 'required|numeric|min:0',
-        'availability' => 'required|string',
-        'certificat' => 'nullable|file|mimes:pdf,jpg,png|max:2048',
-        'identite' => 'nullable|file|mimes:pdf,jpg,png|max:2048',
-    ]);
-
-     // 🔹 Étape 1 : Créer l'utilisateur
-     $technician = new TechnicienDetail();
-
-     $certificat_path = $request->file('certificat') ? $request->file('certificat')->store('public/documents/techniciens') : null;
-     $identite_path = $request->file('identite') ? $request->file('identite')->store('public/documents/techniciens') : null;
-     // 🔹 Étape 2 : Associer les détails du technicien
-     TechnicienDetail::create([
-        'user_id' => $id,
-        'specialty' => $request->input('specialty'),
-        'rate' => $request->input('rate'),
-        'availability' => $request->input('availability'),
-        'certificat_path' => $certificat_path ? Storage::url($certificat_path) : null,
-        'identite_path' => $identite_path ? Storage::url($identite_path) : null,
-    ]);
- 
-     // 🔹 Étape 3 : Connecter et rediriger
-     Auth::login($technician);
- 
-     return redirect()->route('login.form')->with('success', 'Inscription réussie !');
- }
     // Déconnexion
     public function logout()
     {
