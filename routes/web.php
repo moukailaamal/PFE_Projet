@@ -1,11 +1,11 @@
 <?php
 
+use App\Models\CategoryService;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SitemapController;
-
-
+use App\Http\Controllers\CategoryController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -29,3 +29,8 @@ Route::post('/register-information-Technicien', [AuthController::class, 'registe
 
 Route::get('/profile', [UserController::class, 'profile'])->name('profile.form');
 Route::put('/profile/update/{id}', [UserController::class, 'update'])->name('profile.update');
+
+// categories 
+
+
+Route::resource('categories', CategoryController::class);

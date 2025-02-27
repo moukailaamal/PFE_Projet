@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('services', function (Blueprint $table) {
             $table->id();
             $table->foreignId('technician_id')->constrained('users');
-            $table->foreignId('category_id')->constrained('categories_services');
+            $table->foreignId('category_id')->constrained('category_services')->onDelete('cascade');
             $table->string('title', 150);
             $table->text('description');
             $table->decimal('rate', 8, 2);
