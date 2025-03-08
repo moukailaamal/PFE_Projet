@@ -10,7 +10,7 @@ class Message extends Model
     use HasFactory;
 
     protected $fillable = [
-        'reservation_id', 'sender_id', 'content', 'send_date'
+        'reservation_id', 'sender_id', 'content', 'send_date',
     ];
 
     protected $casts = [

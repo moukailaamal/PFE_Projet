@@ -17,13 +17,14 @@ return new class extends Migration
             $table->string('last_name', 100);
             $table->string('email', 150)->unique();
             $table->string('password');
+            $table->string('photo')->nullable();
             $table->enum('role', ['client', 'technician', 'admin']);
             $table->enum('gender', ['male', 'female', 'other']); 
             $table->string('address', 255)->nullable(); 
             $table->string('phone_number', 15)->nullable(); 
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->dateTime('registration_date');
-            $table->string('photo')->nullable(); // Champ pour stocker l'URL de la photo
+
         
             $table->rememberToken(); // Ce champ est séparé et gère l'authentification
             $table->timestamps();

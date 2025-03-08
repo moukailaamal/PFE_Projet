@@ -6,15 +6,16 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\HomeController;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
 Route::get('/sitemap.xml', [SitemapController::class, 'generateSitemap']);
-Route::get('/exemple', function () {
-    return view('exemple');
-});
+
+Route::get('/home', [HomeController::class, 'home'])->name('home');
+
 Route::get('/loginForm', [AuthController::class, 'showLoginForm'])->name('login.form');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::get('/register-client-form', [AuthController::class, 'showRegistrationFormClient'])->name('register.client.form');
@@ -29,8 +30,11 @@ Route::post('/register-information-Technicien', [AuthController::class, 'registe
 
 Route::get('/profile', [UserController::class, 'profile'])->name('profile.form');
 Route::put('/profile/update/{id}', [UserController::class, 'update'])->name('profile.update');
+Route::get('/details/{id}', [UserController::class, 'InformationTechnician'])->name('technician.details');
+Route::post('/store-review', [UserController::class, 'storeAvis'])->name('store.review');
 
 // categories 
 
 
 Route::resource('categories', CategoryController::class);
+

@@ -93,27 +93,49 @@
                         @error('email')
                         <div class="text-red-500">{{ $message }}</div>
                     @enderror
+                 </div>
+                       <!-- Photo -->
+                       <div>
+                        <label for="photo" class="text-sm font-medium text-gray-900 block mb-2">Photo (JPG, PNG)</label>
+                        <input type="file" id="photo" name="photo" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5">
+                        @error('photo')
+                        <div class="text-red-500">{{ $message }}</div>
+                        @enderror
                     </div>
-
                 @if ($user->role == 'technician')
 
                     <!-- Specialty -->
-                    <div>
-                        <label for="specialty" class="text-sm font-medium text-gray-900 block mb-2">Specialty</label>
-                        <input type="text" name="specialty" id="specialty" value="{{ old('specialty', $technician->specialty ?? '') }}" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" required>
-                        @error('specialty')
-                        <div class="text-red-500">{{ $message }}</div>
-                    @enderror
-                    </div>
-                <!-- rate -->
-                <div>
-                    <label for="rate" class="text-sm font-medium text-gray-900 block mb-2">rate</label>
-                    <input type="text" name="rate" id="rate" value="{{ old('rate', $technician->rate ?? '') }}" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" required>
-                    @error('rate')
-                    <div class="text-red-500">{{ $message }}</div>
-                @enderror
-                </div>
-
+                            <div>
+                                <label for="specialty" class="text-sm font-medium text-gray-900 block mb-2">Specialty</label>
+                                <input type="text" name="specialty" id="specialty" value="{{ old('specialty', $technician->specialty ?? '') }}" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" required>
+                                @error('specialty')
+                                <div class="text-red-500">{{ $message }}</div>
+                            @enderror
+                            </div>
+                        <!-- rate -->
+                        <div>
+                            <label for="rate" class="text-sm font-medium text-gray-900 block mb-2">rate</label>
+                            <input type="text" name="rate" id="rate" value="{{ old('rate', $technician->rate ?? '') }}" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" required>
+                            @error('rate')
+                            <div class="text-red-500">{{ $message }}</div>
+                        @enderror
+                        </div>
+                        <!--location-->
+                        <div>
+                            <label for="location" class="text-sm font-medium text-gray-900 block mb-2">location</label>
+                            <input type="text" name="location" id="location" value="{{ old('location', $technician->location ?? '') }}" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" required>
+                            @error('location')
+                            <div class="text-red-500">{{ $message }}</div>
+                        @enderror
+                        </div>
+                           <!--working hours-->
+                           <div>
+                            <label for="working_hours" class="text-sm font-medium text-gray-900 block mb-2">Working hours</label>
+                            <input type="text" name="working_hours" id="working_hours" value="{{ old('working_hours', $technician->working_hours ?? '') }}" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" required>
+                            @error('working_hours')
+                            <div class="text-red-500">{{ $message }}</div>
+                        @enderror
+                        </div>
                     <!-- Availability -->
                     <div>
                         <label for="availability" class="text-sm font-medium text-gray-900 block mb-2">Availability</label>
@@ -132,8 +154,24 @@
                             @error('description')
                             <div class="text-red-500">{{ $message }}</div>
                         @enderror
-                        </div>
-
+                    </div>
+                    <!--Category-->
+                    <div>
+                        <label for="category_id" class="text-sm font-medium text-gray-900 block mb-2">Category</label>
+                        <select name="category_id" id="category_id"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
+                            required>
+                            @foreach ($catgories as $category)
+                                <option value="{{ $category->id }}" {{ old('category_id', $technician->category_id ?? '') == $category->id ? 'selected' : '' }}>
+                                    {{ $category->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('category_id')
+                            <div class="text-red-500 mt-2">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    
                     <!-- Identity Document -->
                     <div>
                         <label for="identite_path" class="text-sm font-medium text-gray-900 block mb-2">Identity Document (PDF, JPG, PNG)</label>
@@ -154,14 +192,7 @@
 
                 @endif
 
-                    <!-- Photo -->
-                    <div>
-                        <label for="photo" class="text-sm font-medium text-gray-900 block mb-2">Photo (PDF, JPG, PNG)</label>
-                        <input type="file"value="{{ old('photo', $technician->photo ?? '') }}"  id="photo" name="photo" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5">
-                        @error('photo')
-                        <div class="text-red-500">{{ $message }}</div>
-                    @enderror
-                    </div>
+               
                 <div class="flex justify-between">
                     <button type="reset" class="w-1/2 bg-gray-400 text-white p-2 rounded-lg">Cancel</button>
                     <button type="submit" class="w-1/2 bg-cyan-600 text-white p-2 rounded-lg">Update Profile</button>

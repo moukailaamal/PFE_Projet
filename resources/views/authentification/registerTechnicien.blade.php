@@ -39,7 +39,7 @@
                     </ul>
                 </div>
             @endif
-            
+
             <form class="mt-8 space-y-6" method="POST" action="{{ route('register.Technicien') }}" enctype="multipart/form-data">
                 @csrf
             
@@ -119,19 +119,20 @@
                     @enderror
                 </div>
             <!-- 📌 Certificate Upload -->
-                <div class="mb-4">
-                    <label for="certificat" class="block font-medium">Certificate (PDF, JPG, PNG)</label>
-                    <input type="file" id="certificat" name="certificat_path" class="w-full border rounded p-2" 
-                        accept=".pdf, .jpg, .jpeg, .png">
-                        @error('certificat_path')
-                        <div class="text-red-500">{{ $message }}</div>
-                    @enderror
-                </div>
+            <div class="mb-4">
+                <label for="identite" class="block font-medium">Identity Document (PDF, JPG, PNG)</label>
+                <input type="file" id="identite" name="identite_path" class="w-full border rounded p-2" 
+                    accept=".pdf, .jpg, .jpeg, .png">
+                @error('identite_path')
+                    <div class="text-red-500">{{ $message }}</div>
+                @enderror
+            </div>
+        
 
                 <!-- 📌 Identity Document Upload -->
                 <div class="mb-4">
-                    <label for="identite" class="block font-medium">Identity Document (PDF, JPG, PNG)</label>
-                    <input type="file" id="identite" name="identite_path" class="w-full border rounded p-2" 
+                    <label for="certificat_path" class="block font-medium">Certificat  Document (PDF, JPG, PNG)</label>
+                    <input type="file" id="certificat_path" name="certificat_path" class="w-full border rounded p-2" 
                         accept=".pdf, .jpg, .jpeg, .png">
                         @error('certificat_path')
                         <div class="text-red-500">{{ $message }}</div>

@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Avis;
+use App\Models\CategoryService;
 use App\Models\User;
-use App\Models\TechnicienDetail;
 use Illuminate\Http\Request;
+use App\Models\TechnicienDetail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -13,18 +15,20 @@ class UserController extends Controller
     public function profile()
     {
         $user = Auth::user();
+        
     
         if (!$user) {
             return redirect()->route('login.form')->with('error', 'Veuillez vous connecter.');
         }
     
-        $technician = null; // Initialisation pour éviter les erreurs
-    
+        $technician = null;
+        $catgories=CategoryService::all();
         if ($user->role == 'technician') {
             $technician = TechnicienDetail::where('user_id', $user->id)->first();
-            return view('profile', compact('user', 'technician'));
+            return view('technician.profile', compact('user', 'technician','catgories'));
         } elseif ($user->role == 'client') {
-            return view('profile', compact('user'));
+           
+            return view('technician.profile', compact('user'));
         }
     
         return redirect()->route('login.form')->with('error', 'Rôle non reconnu.');
@@ -32,49 +36,47 @@ class UserController extends Controller
     
     public function update(Request $request, $id)
     {
-        // Vérifier que l'utilisateur existe avant toute validation
+        // Vérifier que l'utilisateur existe
         $user = User::find($id);
         if (!$user) {
-            return redirect()->route('exemple')->with('error', 'Utilisateur non trouvé.');
+            return redirect()->route('home')->with('error', 'Utilisateur non trouvé.');
         }
     
         // Vérifier que l'utilisateur authentifié est bien celui qui met à jour son profil
         if (!Auth::check() || Auth::id() != $id) {
-            return redirect()->route('exemple')->with('error', 'Vous n\'avez pas l\'autorisation de mettre à jour ce profil.');
+            return redirect()->route('home')->with('error', 'Vous n\'avez pas l\'autorisation de mettre à jour ce profil.');
         }
     
-        // Validation des données avec des règles adaptées
+        // Validation des données
         $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $id, // Autoriser l'email actuel
+            'email' => 'required|email|unique:users,email,' . $id,
             'password' => 'nullable|string|min:8|confirmed',
             'phone_number' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:255',
             'gender' => 'nullable|string|in:male,female',
-            'certificat_path' => 'nullable|file|mimes:pdf,jpg,png|max:2048',
-            'identite_path' => 'nullable|file|mimes:pdf,jpg,png|max:2048',
             'photo' => 'nullable|file|mimes:jpg,png|max:2048',
             'specialty' => 'required_if:user.role,technician|string|max:255',
+            'working_hours' => 'required_if:user.role,technician|string|max:255',
+            'location' => 'required_if:user.role,technician|string|max:255',
             'rate' => 'required_if:user.role,technician|numeric|min:0',
             'availability' => 'required_if:user.role,technician|string|max:255',
             'description' => 'nullable|string|max:500',
-        ], [
-            'email.unique' => 'Cet email est déjà utilisé.',
-            'password.confirmed' => 'Les mots de passe ne correspondent pas.',
+            'category_id' => 'required|exists:category_services,id',
         ]);
     
-        // Si une photo est téléchargée, la traiter
+        // Traitement de la photo (pour tous les utilisateurs)
         if ($request->hasFile('photo')) {
             // Supprimer l'ancienne photo si elle existe
             if ($user->photo) {
                 Storage::disk('public')->delete($user->photo);
             }
             // Enregistrer la nouvelle photo
-            $user->photo = $request->file('photo')->store('user_photo', 'public');
+            $user->photo = $request->file('photo')->store('user_photos', 'public');
         }
-
-        // Mise à jour des informations utilisateur (en excluant la photo pour la mise à jour ci-dessus)
+    
+        // Mise à jour des informations de base (pour tous les utilisateurs)
         $user->update([
             'first_name' => $request->input('first_name'),
             'last_name' => $request->input('last_name'),
@@ -82,14 +84,15 @@ class UserController extends Controller
             'phone_number' => $request->input('phone_number'),
             'address' => $request->input('address'),
             'gender' => $request->input('gender'),
+            'photo' => $user->photo, // Assurez-vous que la photo est incluse
         ]);
     
-        // Si l'utilisateur est un technicien, mettre à jour ses détails
+        // Traitement spécifique aux techniciens
         if ($user->role == 'technician') {
             $technician = TechnicienDetail::where('user_id', $user->id)->first();
     
             if (!$technician) {
-                return redirect()->route('exemple')->with('error', 'Détails du technicien introuvables.');
+                return redirect()->route('home')->with('error', 'Détails du technicien introuvables.');
             }
     
             $technician->update([
@@ -97,9 +100,12 @@ class UserController extends Controller
                 'rate' => $request->input('rate'),
                 'availability' => $request->input('availability'),
                 'description' => $request->input('description'),
+                'category_id' => $request->input('category_id'),
+                'location' => $request->input('location'),
+                'working_hours' => $request->input('working_hours'),
             ]);
     
-            // Gestion des fichiers avec stockage sécurisé
+            // Gestion des fichiers pour les techniciens
             if ($request->hasFile('certificat_path')) {
                 if ($technician->certificat_path) {
                     Storage::disk('public')->delete($technician->certificat_path);
@@ -116,7 +122,27 @@ class UserController extends Controller
     
             $technician->save();
         }
-    
+
         return redirect()->route('profile.form')->with('success', 'Profil mis à jour avec succès.');
     }
+    public function InformationTechnician($id){
+        $user = User::find($id);
+        $avis = Avis::all();
+        $technician = TechnicienDetail::find($id); 
+        return view('technician.details', compact('technician', 'user', 'avis'));
+    }
+    
+    public function storeAvis(Request $request){
+        $avis = new Avis();
+        $avis->client_id = $request->client_id;
+        $avis->technician_id = $request->technician_id;
+        $avis->rating = $request->rating;
+        $avis->comment = $request->comment;
+        $avis->review_date = now(); // Use the current date and time
+        $avis->save();
+    
+        return redirect()->route('technician.details', ['id' => $request->technician_id])->with('success', 'Review added successfully');
+    }
+    
+    
 }

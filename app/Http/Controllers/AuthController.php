@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Log;
 use Carbon\Carbon; 
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -76,8 +77,7 @@ class AuthController extends Controller
         $auth->password = Hash::make($request->input('password'));
         $auth->save();
         
-        // Connecter l'utilisateur
-        Auth::login($auth);
+     
         
         // Rediriger vers la page de connexion avec succès
         return redirect()->route('login.form')->with('success', 'Inscription réussie !');
@@ -90,6 +90,7 @@ class AuthController extends Controller
    }
    public function registerTechnicien(Request $request)
    {
+       // Validation des entrées
        $request->validate([
            'first_name' => 'required|string|max:255',
            'last_name' => 'required|string|max:255',
@@ -105,50 +106,58 @@ class AuthController extends Controller
            'password.min' => 'Le mot de passe doit contenir au moins 8 caractères.',
            'password.confirmed' => 'Les mots de passe ne correspondent pas.',
        ]);
+   
        try {
-       // Créer l'utilisateur
-       $user = new User();
-       $user->first_name = $request->input('first_name');
-       $user->last_name = $request->input('last_name');
-       $user->role = 'technician';
-       $user->status = 'inactive'; 
-       $user->registration_date = Carbon::now();
-       $user->phone_number = $request->input('phone_number');
-       $user->address = $request->input('address');
-       $user->gender = $request->input('gender');
-       $user->email = $request->input('email');
-       $user->password = Hash::make($request->input('password'));
-       $user->save(); // Sauvegarde l'utilisateur et génère son ID
+           // Création de l'utilisateur
+           $user = User::create([
+               'first_name' => $request->first_name,
+               'last_name' => $request->last_name,
+               'role' => 'technician',
+               'status' => 'inactive',
+               'registration_date' => Carbon::now(),
+               'phone_number' => $request->phone_number,
+               'address' => $request->address,
+               'gender' => $request->gender,
+               'email' => $request->email,
+               'password' => Hash::make($request->password),
+           ]);
    
-       // Gestion des fichiers
-       $certificat_path = $request->file('certificat_path') 
-           ? $request->file('certificat_path')->store('public/documents/techniciens') 
-           : null;
-       $identite_path = $request->file('identite_path') 
-           ? $request->file('identite_path')->store('public/documents/techniciens') 
-           : null;
+         
+            // Gestion du stockage des fichiers
+        $certificat_path = null;
+        $identite_path = null;
+        if ($request->hasFile('certificat_path')) {
+            $certificat_path = $request->file('certificat_path')->storeAs(
+                'technicians_certificats', // Répertoire de stockage
+                'certificat_' . $user->id . '.' . $request->file('certificat_path')->extension(), // Nom du fichier
+                'public' // Disque de stockage
+            );
+        }
+        
+        if ($request->hasFile('identite_path')) {
+            $identite_path = $request->file('identite_path')->storeAs(
+                'technicians_identite', // Répertoire de stockage
+                'identite_' . $user->id . '.' . $request->file('identite_path')->extension(), // Nom du fichier
+                'public' // Disque de stockage
+            );
+        }
+        
+           // Création des détails du technicien
+           $technician = new TechnicienDetail();
+           $technician->user_id = $user->id;
+           $technician->certificat_path = $certificat_path;
+           $technician->identite_path = $identite_path;
+           $technician->save(); 
+           return redirect()->route('login.form')->with('status', 'Inscription réussie !');
+       
+       } catch (\Exception $e) {
    
-       // Associer les détails du technicien
-       $technician = new TechnicienDetail();
-       $technician->user_id = $user->id;  // Utilise l'ID généré après la sauvegarde de l'utilisateur
-       $technician->specialty = null;  // Valeur par défaut ou à ajuster
-       $technician->rate = null;      // Valeur par défaut ou à ajuster
-       $technician->availability = null;  // À remplir si nécessaire
-       $technician->certificat_path = $certificat_path;
-       $technician->identite_path = $identite_path;
-
-       $technician->save();    
-
-       // Connecter l'utilisateur et rediriger
-       Auth::login($user);
-   
-       return redirect()->route('login.form')->with('status', 'Inscription réussie !');
-    } catch (\Exception $e) {
- // Message d'erreur
- return redirect()->back()->with('error', 'Échec de l\'inscription. Veuillez réessayer.');
+           // Retour avec un message d'erreur
+           return back()->withErrors(['email' => 'Une erreur s\'est produite lors de l\'inscription.'])
+                        ->with('error', 'Échec de l\'inscription.');
+       }
    }
-}
-   
+     
    
    
    
@@ -165,6 +174,6 @@ class AuthController extends Controller
     public function logout()
     {
         Auth::logout();
-        return redirect('/');
+        return redirect()->route('home');
     }
 }

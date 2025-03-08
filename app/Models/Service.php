@@ -10,7 +10,7 @@ class Service extends Model
     use HasFactory;
 
     protected $fillable = [
-        'technicien_id', 'categorie_id', 'titre', 'description', 'tarif', 'date_creation'
+        'technicien_id', 'categorie_id', 'title', 'date_creation'
     ];
 
     protected $casts = [

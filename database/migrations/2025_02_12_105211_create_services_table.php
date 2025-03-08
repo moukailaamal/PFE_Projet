@@ -16,8 +16,7 @@ return new class extends Migration
             $table->foreignId('technician_id')->constrained('users');
             $table->foreignId('category_id')->constrained('category_services')->onDelete('cascade');
             $table->string('title', 150);
-            $table->text('description');
-            $table->decimal('rate', 8, 2);
+    
             $table->dateTime('creation_date');
             
             $table->timestamps();
