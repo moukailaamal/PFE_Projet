@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Avis;
 use App\Models\CategoryService;
+use App\Models\Service;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\TechnicienDetail;
@@ -58,10 +59,9 @@ class UserController extends Controller
             'gender' => 'nullable|string|in:male,female',
             'photo' => 'nullable|file|mimes:jpg,png|max:2048',
             'specialty' => 'required_if:user.role,technician|string|max:255',
-            'working_hours' => 'required_if:user.role,technician|string|max:255',
             'location' => 'required_if:user.role,technician|string|max:255',
             'rate' => 'required_if:user.role,technician|numeric|min:0',
-            'availability' => 'required_if:user.role,technician|string|max:255',
+            'availability' => 'required|json',
             'description' => 'nullable|string|max:500',
             'category_id' => 'required|exists:category_services,id',
         ]);
@@ -95,14 +95,26 @@ class UserController extends Controller
                 return redirect()->route('home')->with('error', 'Détails du technicien introuvables.');
             }
     
+            // Vérifier et décoder le JSON
+            $availability = json_decode($request->input('availability'), true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                return redirect()->back()->withErrors(['availability' => 'Le format JSON est invalide.']);
+            }
+            
+            foreach ($availability as $slot) {
+                if (!isset($slot['day']) || !isset($slot['start_time']) || !isset($slot['end_time'])) {
+                    return redirect()->back()->withErrors(['availability' => 'La structure JSON est incorrecte.']);
+                }
+            }
+            // Mise à jour des informations du technicien
             $technician->update([
                 'specialty' => $request->input('specialty'),
                 'rate' => $request->input('rate'),
-                'availability' => $request->input('availability'),
+                'availability' => $request->input('availability'), // Utilisation du JSON
                 'description' => $request->input('description'),
                 'category_id' => $request->input('category_id'),
                 'location' => $request->input('location'),
-                'working_hours' => $request->input('working_hours'),
+               
             ]);
     
             // Gestion des fichiers pour les techniciens
@@ -111,6 +123,7 @@ class UserController extends Controller
                     Storage::disk('public')->delete($technician->certificat_path);
                 }
                 $technician->certificat_path = $request->file('certificat_path')->store('technicians_certificats', 'public');
+                $technician->save(); // Sauvegarder après la mise à jour du fichier
             }
     
             if ($request->hasFile('identite_path')) {
@@ -118,19 +131,29 @@ class UserController extends Controller
                     Storage::disk('public')->delete($technician->identite_path);
                 }
                 $technician->identite_path = $request->file('identite_path')->store('technicians_identite', 'public');
+                $technician->save(); // Sauvegarder après la mise à jour du fichier
             }
-    
-            $technician->save();
         }
-
+    
         return redirect()->route('profile.form')->with('success', 'Profil mis à jour avec succès.');
     }
-    public function InformationTechnician($id){
-        $user = User::find($id);
-        $avis = Avis::all();
-        $technician = TechnicienDetail::find($id); 
-        return view('technician.details', compact('technician', 'user', 'avis'));
+ public function InformationTechnician($id) {
+    
+    $services = Service::where('technician_id', $id)->get();
+    $avis = Avis::all();
+    $technician = TechnicienDetail::find($id);
+    $idUser=$technician->user_id;
+    $user = User::find($idUser);
+    // Décoder le champ availability
+    if ($technician && $technician->availability) {
+        $technician->availability = json_decode($technician->availability, true);
+    } else {
+        $technician->availability = []; // Valeur par défaut si vide ou null
     }
+
+    // Passer les données à la vue
+    return view('technician.details', compact('technician', 'user', 'avis','services'));
+}
     
     public function storeAvis(Request $request){
         $avis = new Avis();

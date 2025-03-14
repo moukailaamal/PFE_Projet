@@ -15,10 +15,10 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->string('specialty', 100)->nullable();
             $table->decimal('rate', 10, 2)->nullable();
-            $table->text('availability')->nullable();
+            $table->json('availability')->nullable(); 
             $table->text('description')->nullable();
             $table->unsignedBigInteger('category_id')->nullable(); 
-            $table->string('working_hours')->nullable();;
+            
             $table->string('location')->nullable();;
             $table->string('certificat_path')->nullable();
             $table->string('identite_path')->nullable();

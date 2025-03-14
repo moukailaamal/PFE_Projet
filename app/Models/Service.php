@@ -8,9 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Service extends Model
 {
     use HasFactory;
+    protected $table = 'services'; 
 
     protected $fillable = [
-        'technicien_id', 'categorie_id', 'title', 'date_creation'
+        'technician_id', 'category_id', 'title', 
     ];
 
     protected $casts = [
@@ -19,13 +20,15 @@ class Service extends Model
 
     public function technicien()
     {
-        return $this->belongsTo(User::class, 'technicien_id');
+        return $this->belongsTo(User::class, 'technician_id');
     }
 
+   
     public function category()
-    {
-        return $this->belongsTo(CategoryService::class, 'categorie_id');
-    }
+{
+    return $this->belongsTo(CategoryService::class, 'category_id');
+}
+
 
     public function reservations()
     {

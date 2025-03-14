@@ -3,10 +3,11 @@
 use App\Models\CategoryService;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\HomeController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -37,4 +38,5 @@ Route::post('/store-review', [UserController::class, 'storeAvis'])->name('store.
 
 
 Route::resource('categories', CategoryController::class);
+Route::resource('services', ServiceController::class);
 

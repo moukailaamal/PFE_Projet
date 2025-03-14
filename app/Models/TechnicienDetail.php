@@ -7,7 +7,7 @@ class TechnicienDetail extends Model
 {
     protected $table = 'techniciens_details'; 
     protected $fillable = [
-        'user_id', 'specialty', 'working_hours', 'location', 'category_id', 
+        'user_id', 'specialty',  'location', 'category_id', 
         'rate', 'availability', 'certifications', 'description', 
         'certificate_path', 'identity_path', 'verification_status'
     ];
@@ -26,4 +26,8 @@ class TechnicienDetail extends Model
     {
         return $this->belongsTo(CategoryService::class, 'category_id');
     }
+    public function reservation()
+{
+    return $this->hasMany(Reservation::class, 'technician_id');
+}
 }

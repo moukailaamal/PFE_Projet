@@ -19,7 +19,8 @@ return new class extends Migration
             $table->dateTime('appointment_date');
             $table->enum('status', ['pending', 'confirmed', 'canceled', 'completed']);
             $table->dateTime('creation_date');
-            
+            $table->enum('reservation_type', ['instant', 'quote_request'])->default('instant');
+            $table->integer('duration')->nullable(); // Durée en minutes
             $table->timestamps();
         });
     }

@@ -13,14 +13,12 @@ return new class extends Migration
     {
         Schema::create('services', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('technician_id')->constrained('users');
-            $table->foreignId('category_id')->constrained('category_services')->onDelete('cascade');
-            $table->string('title', 150);
-    
-            $table->dateTime('creation_date');
-            
+            $table->string('title');
+            $table->foreignId('technician_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('category_id')->nullable()->constrained('category_services')->onDelete('cascade');
             $table->timestamps();
         });
+        
     }
 
     /**
