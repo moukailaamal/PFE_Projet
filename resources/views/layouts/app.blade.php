@@ -5,6 +5,8 @@
     <link rel="stylesheet" href="{{ asset('/public/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('/ressources/css/style.css') }}">
 
+    <script src="{{ mix('js/app.js') }}"></script>
+
 </head>
 <body> 
 

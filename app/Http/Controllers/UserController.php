@@ -57,13 +57,13 @@ class UserController extends Controller
             'phone_number' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:255',
             'gender' => 'nullable|string|in:male,female',
-            'photo' => 'nullable|file|mimes:jpg,png|max:2048',
+            'photo' => 'nullable|file|mimes:jpg,png|max:2048', // Photo validation for all users
             'specialty' => 'required_if:user.role,technician|string|max:255',
             'location' => 'required_if:user.role,technician|string|max:255',
             'rate' => 'required_if:user.role,technician|numeric|min:0',
-            'availability' => 'required|json',
+            'availability' => 'required_if:user.role,technician|json',
             'description' => 'nullable|string|max:500',
-            'category_id' => 'required|exists:category_services,id',
+            'category_id' => 'required_if:user.role,technician|exists:category_services,id',
         ]);
     
         // Traitement de la photo (pour tous les utilisateurs)
@@ -100,12 +100,13 @@ class UserController extends Controller
             if (json_last_error() !== JSON_ERROR_NONE) {
                 return redirect()->back()->withErrors(['availability' => 'Le format JSON est invalide.']);
             }
-            
+    
             foreach ($availability as $slot) {
                 if (!isset($slot['day']) || !isset($slot['start_time']) || !isset($slot['end_time'])) {
                     return redirect()->back()->withErrors(['availability' => 'La structure JSON est incorrecte.']);
                 }
             }
+    
             // Mise à jour des informations du technicien
             $technician->update([
                 'specialty' => $request->input('specialty'),
@@ -114,7 +115,6 @@ class UserController extends Controller
                 'description' => $request->input('description'),
                 'category_id' => $request->input('category_id'),
                 'location' => $request->input('location'),
-               
             ]);
     
             // Gestion des fichiers pour les techniciens

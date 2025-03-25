@@ -10,7 +10,7 @@ class Reservation extends Model
     use HasFactory;
 
     protected $fillable = [
-        'client_id', 'technician_id', 'service_id', 'appointment_date', 'status', 'creation_date'
+        'client_id', 'technician_id','notes','address',  'appointment_date', 'status', 'creation_date'
     ];
 
     protected $casts = [
@@ -23,7 +23,7 @@ class Reservation extends Model
         return $this->belongsTo(User::class, 'client_id');
     }
 
-    public function technicien()
+    public function technician()
     {
         return $this->belongsTo(User::class, 'technician_id');
     }

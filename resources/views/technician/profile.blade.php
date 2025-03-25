@@ -33,6 +33,7 @@
                 @method('PUT')
 
                 <!-- Prénom -->
+                
                 <div>
                     <label for="first_name" class="text-sm font-medium text-gray-900 block mb-2">Your First Name</label>
                     <input type="text" name="first_name" id="first_name" value="{{ old('first_name', $user->first_name) }}"
@@ -96,7 +97,7 @@
                     @enderror
                 </div>
 
-                <!-- Photo -->
+                    <!-- Photo -->
                 <div>
                     <label for="photo" class="text-sm font-medium text-gray-900 block mb-2">Photo (JPG, PNG)</label>
                     <input type="file" id="photo" name="photo" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5">
@@ -104,10 +105,9 @@
                         <div class="text-red-500 mt-2">{{ $message }}</div>
                     @enderror
                 </div>
-
                 <!-- Section Technicien -->
-                @if ($user->role == 'technician')
-                    <!-- Specialty -->
+                @if(Auth::user()->role == "technician")
+                <!-- Specialty -->
                     <div>
                         <label for="specialty" class="text-sm font-medium text-gray-900 block mb-2">Specialty</label>
                         <input type="text" name="specialty" id="specialty" value="{{ old('specialty', $technician->specialty ?? '') }}"

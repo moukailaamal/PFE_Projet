@@ -3,6 +3,7 @@
 use App\Models\CategoryService;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BookController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ServiceController;
@@ -35,8 +36,26 @@ Route::get('/details/{id}', [UserController::class, 'InformationTechnician'])->n
 Route::post('/store-review', [UserController::class, 'storeAvis'])->name('store.review');
 
 // categories 
-
-
 Route::resource('categories', CategoryController::class);
+// services
 Route::resource('services', ServiceController::class);
 
+// reservations 
+Route::get('/book/{id}', [BookController::class, 'showBookingDaysForm'])->name('book.days');
+Route::get('/book/{id}/{day}', [BookController::class, 'showBookingHoursForm'])->name('book.hours');
+
+Route::post('/book/store', [BookController::class, 'storeReservation'])->name('book.store');
+Route::post('/reservation/confirmer', [BookController::class, 'confirmReservation'])->name('reservation.confirm');
+
+Route::get('/confirmation/{id}', [BookController::class, 'confirmation'])->name('book.confirmation');
+
+Route::get('/listAppointments/{id}', [BookController::class, 'listAppointmentsTech'])->name('book.listAppointmentsTech');
+
+Route::get('/listAppointments/tech/{id}', [BookController::class, 'listAppointmentsTech'])->name('book.listAppointmentsTech');
+Route::get('/listAppointments/client/{id}', [BookController::class, 'listAppointmentsClient'])->name('book.listAppointmentsClient');
+Route::get('/listAppointments/admin/{id}', [BookController::class, 'listAppointmentsAdmin'])->name('book.listAppointmentsAdmin');
+
+Route::put('/reservations/{id}/cancel', [BookController::class, 'canceled'])->name('book.cancel');
+Route::put('/reservations/{id}/reactivate', [BookController::class, 'reactivate'])->name('book.reactivate');
+Route::put('/reservations/{id}/confirmed', [BookController::class, 'confirmed'])->name('book.confirmed');
+Route::put('/reservations/{id}/completed', [BookController::class, 'completed'])->name('book.completed');
