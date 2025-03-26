@@ -5,7 +5,6 @@
     <link rel="stylesheet" href="{{ asset('/public/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('/ressources/css/style.css') }}">
 
-    <script src="{{ mix('js/app.js') }}"></script>
 
 </head>
 <body> 
@@ -15,11 +14,11 @@
     @include('layouts.partials.navbar-dashboard')  
     @include('layouts.partials.sidebar')   
 
-    <div class="ml-64 p-4"> 
-        @yield('content')   <!-- Contenu spécifique de chaque page -->
+    <div class="p-4 w-full md:ml-64 md:w-auto transition-all duration-300">
+        @yield('content')
     </div>
 
-    <script src="{{ asset('/public/js/app.js') }}"></script>
+    <script src="{{ asset('/resources/js/app.js') }}"></script>
     <script src="{{ asset('/public/js/charts.js') }}"></script>
     <script src="{{ asset('/public/js/sidebar.js') }}"></script>
 

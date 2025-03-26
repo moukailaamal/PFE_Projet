@@ -137,35 +137,61 @@ class UserController extends Controller
     
         return redirect()->route('profile.form')->with('success', 'Profil mis à jour avec succès.');
     }
- public function InformationTechnician($id) {
+    public function InformationTechnician($id) {
+        $technician = TechnicienDetail::findOrFail($id);
+        $user = User::findOrFail($technician->user_id);
+        
+        $services = Service::where('technician_id', $id)->get();
+        $avis = Avis::where('technician_id', $user->id)->get(); // Filtrer par user_id
     
-    $services = Service::where('technician_id', $id)->get();
-    $avis = Avis::all();
-    $technician = TechnicienDetail::find($id);
-    $idUser=$technician->user_id;
-    $user = User::find($idUser);
-    // Décoder le champ availability
-    if ($technician && $technician->availability) {
-        $technician->availability = json_decode($technician->availability, true);
-    } else {
-        $technician->availability = []; // Valeur par défaut si vide ou null
+        if ($technician->availability) {
+            $technician->availability = json_decode($technician->availability, true);
+        } else {
+            $technician->availability = [];
+        }
+    
+        return view('technician.details', compact('technician', 'user', 'avis', 'services'));
+    }
+    
+public function storeAvis(Request $request)
+{
+    if (!auth()->check()) {
+        return redirect()->route('login')->with('error', 'Veuillez vous connecter pour soumettre un avis');
     }
 
-    // Passer les données à la vue
-    return view('technician.details', compact('technician', 'user', 'avis','services'));
-}
+    $validated = $request->validate([
+        'technician_id' => 'required|exists:users,id',
+        'rating' => 'required|integer|between:1,5',
+        'comment' => 'required|string|max:500',
+    ]);
+
+    // Trouver le technicien via la table users
+    $technicianUser = User::find($validated['technician_id']);
     
-    public function storeAvis(Request $request){
-        $avis = new Avis();
-        $avis->client_id = $request->client_id;
-        $avis->technician_id = $request->technician_id;
-        $avis->rating = $request->rating;
-        $avis->comment = $request->comment;
-        $avis->review_date = now(); // Use the current date and time
-        $avis->save();
+    // Vérifier que c'est bien un technicien
+    $technicianDetail = TechnicienDetail::where('user_id', $technicianUser->id)->first();
     
-        return redirect()->route('technician.details', ['id' => $request->technician_id])->with('success', 'Review added successfully');
+    if (!$technicianDetail) {
+        return back()->with('error', 'Utilisateur non trouvé comme technicien');
     }
-    
+
+    try {
+        Avis::create([
+            'client_id' => auth()->id(),
+            'technician_id' => $technicianUser->id, // ID de l'utilisateur
+            'rating' => $validated['rating'],
+            'comment' => $validated['comment'],
+            'review_date' => now(),
+        ]);
+
+        return redirect()
+            ->route('technician.details', ['id' => $technicianDetail->id])
+            ->with('success', 'Avis soumis avec succès!');
+
+    } catch (\Exception $e) {
+        \Log::error('Échec de soumission: '.$e->getMessage());
+        return back()->with('error', 'Échec de soumission. Veuillez réessayer.');
+    }
+}
     
 }

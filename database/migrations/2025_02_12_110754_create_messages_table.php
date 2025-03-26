@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('reservation_id')->constrained('reservations')->onDelete('cascade'); // Ajout de onDelete('cascade')
-            $table->foreignId('sender_id')->constrained('users')->onDelete('cascade'); // Ajout de onDelete('cascade')
+            $table->foreignId('reservation_id')->constrained('reservations')->nullable()->constrained(); 
             $table->foreignId('receiver_id')->constrained('users')->onDelete('cascade'); // Nouveau champ : receiver_id
             $table->text('content');
             $table->dateTime('send_date')->useCurrent(); // Utilisation de useCurrent() pour la date actuelle par défaut

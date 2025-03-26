@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\CategoryController;
@@ -59,3 +60,23 @@ Route::put('/reservations/{id}/cancel', [BookController::class, 'canceled'])->na
 Route::put('/reservations/{id}/reactivate', [BookController::class, 'reactivate'])->name('book.reactivate');
 Route::put('/reservations/{id}/confirmed', [BookController::class, 'confirmed'])->name('book.confirmed');
 Route::put('/reservations/{id}/completed', [BookController::class, 'completed'])->name('book.completed');
+
+// Groupe de routes protégées par auth
+Route::middleware(['auth'])->group(function () {
+    
+    // Page principale du chat
+    Route::get('/chat', [MessageController::class, 'index'])
+         ->name('chat.index');
+    
+    // Envoi de message
+    Route::post('/send-message', [MessageController::class, 'sendMessage'])
+         ->name('chat.send');
+    
+    // Marquer les messages comme lus
+    Route::post('/messages/mark-as-read', [MessageController::class, 'markAsRead'])
+         ->name('messages.read');
+    
+    // Récupérer les messages d'une réservation
+    Route::get('/messages/{reservation}', [MessageController::class, 'getMessages'])
+         ->name('messages.history');
+});

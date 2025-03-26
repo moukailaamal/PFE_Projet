@@ -23,12 +23,7 @@
                 @endforeach
             </select>
         
-            <!-- Sélection de la disponibilité -->
-            <select name="availability" class="w-full md:w-auto px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-600">
-                <option value="">All</option>
-                <option value="available" {{ request('availability') == 'available' ? 'selected' : '' }}>Available now</option>
-                <option value="unavailable" {{ request('availability') == 'unavailable' ? 'selected' : '' }}>Unavailable</option>
-            </select>
+    
         
             <!-- Champ de localisation -->
             <input type="text" name="location" placeholder="Location..." 

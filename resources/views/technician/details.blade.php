@@ -137,7 +137,7 @@
                         </div>
                         <input type="hidden" name="rating" id="rating" value="0">
                         <input type="hidden" name="client_id" value="{{ Auth::id() }}">
-                        <input type="hidden" name="technician_id" value="{{ $technician->id }}">
+                        <input type="hidden" name="technician_id" value="{{ $technician->user_id }}">
                     </div>
                     <!-- Comment -->
                     <div>

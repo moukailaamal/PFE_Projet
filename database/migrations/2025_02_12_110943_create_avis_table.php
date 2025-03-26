@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('avis', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('client_id')->constrained('users');
-            $table->foreignId('technician_id')->constrained('users');
+            $table->foreignId('client_id')->constrained('users') ->onDelete('cascade');
+            $table->foreignId('technician_id')->constrained('users') ->onDelete('cascade');
             $table->tinyInteger('rating');
             $table->text('comment');
             $table->dateTime('review_date');

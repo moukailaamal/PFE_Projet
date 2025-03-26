@@ -35,19 +35,19 @@ class User extends Authenticatable
     {
         return $this->hasOne(TechnicienDetail::class);
     }
-
-    public function reservations()
-    {
-        return $this->hasMany(Reservation::class);
-    }
+// Dans app/Models/User.php
+public function reservations()
+{
+    return $this->hasMany(Reservation::class, 'client_id')
+        ->orWhere('technician_id', $this->id);
+}
 
     public function messages()
     {
         return $this->hasMany(Message::class);
     }
-
-    public function avis()
+    public function avisAsTechnician()
     {
-        return $this->hasMany(Avis::class);
+        return $this->hasMany(Avis::class, 'technician_id');
     }
 }
