@@ -9,7 +9,12 @@
     <!-- Informations du technicien -->
     <div class="mb-6">
         <p class="text-lg text-gray-700">
+            @if($technician && $technician->user)
             Technician: <span class="font-semibold">{{ $technician->user->first_name }} {{ $technician->user->last_name }}</span>
+        @else
+            <span class="text-red-500">Technician not found</span>
+        @endif
+        
         </p>
     </div>
 

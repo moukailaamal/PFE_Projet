@@ -22,15 +22,17 @@ return new class extends Migration
             $table->enum('gender', ['male', 'female', 'other']); 
             $table->string('address', 255)->nullable(); 
             $table->string('phone_number', 15)->nullable(); 
-            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->enum('status', ['active', 'inactive', 'pending'])->nullable(); // Added 'pending' status
             $table->dateTime('registration_date');
-
+            
+            // Email verification
+            $table->timestamp('email_verified_at')->nullable();
         
-            $table->rememberToken(); // Ce champ est séparé et gère l'authentification
+            $table->rememberToken();
             $table->timestamps();
         });
         
-
+        // Rest of your migration remains the same...
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');

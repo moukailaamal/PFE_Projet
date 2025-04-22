@@ -38,9 +38,9 @@ class Reservation extends Model
         return $this->hasMany(Message::class);
     }
 
-    public function paiement()
+    public function payment()
     {
-        return $this->hasOne(Paiement::class);
+        return $this->belongsTo(Paiement::class);
     }
 
     public function avis()

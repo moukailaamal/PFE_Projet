@@ -2,23 +2,32 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Paiement extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
-        'reservation_id', 'amount', 'payment_method', 'status', 'payment_date'
-    ];
-
-    protected $casts = [
-        'payment_date' => 'datetime',
+        'client_id',
+        'reservation_id',
+        'technician_id',
+        'amount',
+        'payment_method',
+        'status',
+        'payment_date',
     ];
 
     public function reservation()
+{
+    return $this->hasOne(Reservation::class);
+}
+
+    public function client()
     {
-        return $this->belongsTo(Reservation::class);
+        return $this->belongsTo(User::class, 'client_id');
+    }
+
+    public function technician()
+    {
+        return $this->belongsTo(User::class, 'technician_id');
     }
 }

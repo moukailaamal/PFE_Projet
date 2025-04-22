@@ -10,17 +10,14 @@ class Message extends Model
     use HasFactory;
 
     protected $fillable = [
-        'reservation_id', 'sender_id', 'receiver_id', 'content', 'send_date', 'is_read', 'message_type'
+         'sender_id', 'receiver_id', 'message', 'send_date', 'is_read', 'message_type'
     ];
 
     protected $casts = [
         'send_date' => 'datetime',
     ];
 
-    public function reservation()
-    {
-        return $this->belongsTo(Reservation::class);
-    }
+
 
     public function sender()
     {

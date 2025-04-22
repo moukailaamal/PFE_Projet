@@ -51,6 +51,17 @@
                     <p class="text-gray-600">Notes:</p>
                     <p class="text-lg font-semibold">{{ $reservation->notes ?? 'No notes provided' }}</p>
                 </div>
+                <!-- Payment-->
+                <div>
+                    <p class="text-gray-600">Paiment :</p>
+                    <p class="text-lg font-semibold">{{ $payment->payment_method ?? ' ' }}</p>
+                </div>
+
+                 <!-- Payment-->
+                 <div>
+                    <p class="text-gray-600">amount :</p>
+                    <p class="text-lg font-semibold">{{ $payment->amount ?? ' ' }}</p>
+                </div>
 
                 <!-- Creation Date -->
                 <div>

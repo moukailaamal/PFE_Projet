@@ -18,6 +18,7 @@ return new class extends Migration
             $table->dateTime('appointment_date');
             $table->string('address')->nullable(); 
             $table->string('notes')->nullable(); 
+           
             $table->enum('status', ['pending', 'confirmed', 'canceled', 'completed']);
             $table->dateTime('creation_date');
             $table->enum('reservation_type', ['instant', 'quote_request'])->default('instant');

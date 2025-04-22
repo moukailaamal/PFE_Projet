@@ -2,21 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Paiement;
 use App\Models\User;
 use App\Models\Service;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
-use App\Models\TechnicienDetail;
+use App\Models\TechnicianDetail;
 use Carbon\Carbon; // Carbon pour manipuler les dates
 
 class BookController extends Controller
 {
+        public function confirmation($id)
+        {
+            $reservation = Reservation::with(['technician', 'payment'])->findOrFail($id);
+            $payment = Paiement::where('reservation_id', $id)->first();            
+            return view('book.confirmation', compact('reservation', 'payment'));
+        }
+  
     /**
      * Affiche le formulaire de réservation avec les disponibilités du technicien.
      */
     public function showBookingDaysForm($id)
     {
-        $technician = TechnicienDetail::findOrFail($id);
+        $technician = TechnicianDetail::findOrFail($id);
 
         // Récupérer les jours disponibles du technicien
         $availability = json_decode($technician->availability, true);
@@ -30,7 +38,7 @@ class BookController extends Controller
      */
     public function showBookingHoursForm($id, $day)
     {
-        $technician = TechnicienDetail::findOrFail($id);
+        $technician = TechnicianDetail::findOrFail($id);
     
         // Convertir la date en jour de la semaine (ex: "Tuesday")
         $dayOfWeek = date('l', strtotime($day));
@@ -96,6 +104,7 @@ class BookController extends Controller
          $appointmentDateTime = $validatedData['appointment_date'] . ' ' . $validatedData['appointment_time'];
      
          try {
+            
              // Créer la réservation
              $reservation = Reservation::create([
                  'client_id' => auth()->id(), // ID de l'utilisateur connecté
@@ -108,7 +117,7 @@ class BookController extends Controller
              ]);
      
              // Rediriger avec un message de succès
-             return redirect()->route('book.confirmation', $reservation->id)
+             return redirect()->route('payments.PaymentMethod', $reservation->id)
                               ->with('success', 'Réservation créée avec succès.');
          } catch (\Exception $e) {
              // En cas d'erreur, rediriger avec un message d'erreur
@@ -118,12 +127,7 @@ class BookController extends Controller
          }
      }
 
-     public function confirmation( $id){
-                    // Fetch the reservation with the technician relationship loaded
-                $reservation = Reservation::with('technician')->find($id);
-                    return view('book.confirmation', compact('reservation'));
 
-     }
 
 
     /**
@@ -213,7 +217,7 @@ class BookController extends Controller
     public function getAvailableSlots($id, $date)
     {
         // Récupérer le technicien
-        $technician = TechnicienDetail::findOrFail($id);
+        $technician = TechnicianDetail::findOrFail($id);
 
         // Récupérer les réservations non annulées
         $reservations = Reservation::where('technician_id', $id)
@@ -227,8 +231,8 @@ class BookController extends Controller
     }
     public function listAppointmentsTech($id)
     {
-        $technician = TechnicienDetail::with('user')->where('user_id', $id)->first();
-        // Récupérer les rendez-vous pour le technicien spécifié
+        $technician = TechnicianDetail::with('user')->where('user_id', $id)->first();
+        
         $reservations = Reservation::where('technician_id', $id)
             ->orderBy('appointment_date', 'asc') 
             ->get();
@@ -238,26 +242,25 @@ class BookController extends Controller
     }
     public function listAppointmentsClient($id)
     {
-        // Récupérer les rendez-vous pour le technicien spécifié
+        $client=User::find($id);
+       
         $reservations = Reservation::where('client_id', $id)
             ->orderBy('appointment_date', 'asc') 
             ->get();
     
         // Retourner la vue avec les données
-        return view('book.listAppointmentsClient', compact('reservations'));
+        return view('book.listAppointmentsClient', compact('reservations','client'));
     }
-    public function listAppointmentsAdmin($id)
-    {
-        $admin=User::find($id);
-        // Récupérer les rendez-vous pour le technicien spécifié
-        $reservations = Reservation::all()
-            ->orderBy('appointment_date', 'asc') 
-            ->get();
+ 
+    public function listAllAppointement(){
+        $users=User::all();
+        $reservations = Reservation::with(['client', 'technician'])
+        ->orderBy('appointment_date', 'asc')
+        ->get();
     
-        // Retourner la vue avec les données
-        return view('book.listAppointmentsAdmin', compact('reservations','client'));
+        return view('book.listAppointmentsAdmin', compact('users', 'reservations'));
     }
-
+    
     public function confirmed($id)
     {
         // Récupérer la réservation

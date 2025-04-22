@@ -23,8 +23,6 @@
                 @endforeach
             </select>
         
-    
-        
             <!-- Champ de localisation -->
             <input type="text" name="location" placeholder="Location..." 
                    class="w-full md:w-auto px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-600"
@@ -37,70 +35,87 @@
         </form>
     </div>
 
-    <!-- Sections par spécialité -->
-    @forelse($groupedTechnicians as $specialty => $technicians)
-        <div class="mb-12">
-            <!-- Titre de la spécialité -->
-            <h2 class="text-2xl font-bold text-gray-900 mb-6 border-b-2 border-cyan-600 pb-2">
-                {{ $specialty }}
-            </h2>
+    <!-- Horizontal layout for specialties -->
+    <div class="space-y-8">
+        @forelse($groupedTechnicians as $specialty => $technicians)
+            <div class="mb-8">
+                <!-- Specialty title -->
+                <h2 class="text-2xl font-bold text-gray-900 mb-6 border-b-2 border-cyan-600 pb-2">
+                    {{ $specialty }}
+                </h2>
 
-            <!-- Liste des techniciens pour cette spécialité -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                @foreach($technicians as $technician)
-                    <div class="bg-white shadow-xl rounded-lg overflow-hidden transform transition-transform duration-300 hover:scale-105 h-full flex flex-col">
-                        <!-- Photo du technicien -->
-                        <div class="w-full h-64 flex items-center justify-center bg-gray-100">
-                            <img class="w-full h-full object-cover" 
-                                 src="{{ asset('storage/' . $technician->user->photo) }}"
-                                 alt="{{ $technician->user->first_name }} {{ $technician->user->last_name }}">
-                        </div>
+                <!-- Horizontal scrolling container for technicians -->
+                <div class="relative">
+                    <div class="flex space-x-6 pb-4 overflow-x-auto scrollbar-hide">
+                        @foreach($technicians as $technician)
+                            <div class="flex-shrink-0 w-80 bg-white shadow-xl rounded-lg overflow-hidden transform transition-transform duration-300 hover:scale-105">
+                                <div class="flex flex-row h-full">
+                                    <!-- Technician photo -->
+                                    <div class="w-1/3 h-auto">
+                                        <img class="w-full h-full object-cover" 
+                                             src="{{ asset('storage/' . $technician->user->photo) }}"
+                                             alt="{{ $technician->user->first_name }} {{ $technician->user->last_name }}">
+                                    </div>
 
-                        <!-- Détails du technicien -->
-                        <div class="p-6 flex flex-col flex-grow">
-                            <h2 class="text-xl font-semibold text-gray-900">
-                                {{ $technician->user->first_name }} {{ $technician->user->last_name }}
-                            </h2>
-                            <p class="text-sm text-gray-500 mt-1">{{ $technician->specialty }}</p>
+                                    <!-- Technician details -->
+                                    <div class="w-2/3 p-4 flex flex-col">
+                                        <h2 class="text-lg font-semibold text-gray-900">
+                                            {{ $technician->user->first_name }} {{ $technician->user->last_name }}
+                                        </h2>
+                                        <p class="text-xs text-gray-500 mt-1">{{ $technician->specialty }}</p>
 
-                            <!-- Description -->
-                            <p class="text-gray-700 mt-2 text-sm line-clamp-3">
-                                {{ Str::limit($technician->description, 100) }}
-                            </p>
+                                        <!-- Description -->
+                                        <p class="text-gray-700 mt-2 text-xs line-clamp-2">
+                                            {{ Str::limit($technician->description, 60) }}
+                                        </p>
 
-                            <!-- Taux horaire -->
-                            <p class="text-lg font-bold text-cyan-600 mt-3">{{ $technician->rate }}$/h</p>
+                                        <!-- Rate -->
+                                        <p class="text-md font-bold text-cyan-600 mt-2">{{ $technician->rate }}$/h</p>
 
-                            <!-- Disponibilité -->
-                            <div class="flex items-center mt-2">
-                                <span class="text-sm text-gray-600">
-                                    <strong>Availability :</strong> {{ $technician->availability ? 'Available' : 'Unavailable' }}
-                                </span>
+                                        <!-- Availability -->
+                                        <div class="mt-1">
+                                            <span class="text-xs text-gray-600">
+                                                <strong>Avail:</strong> {{ $technician->availability ? 'Yes' : 'No' }}
+                                            </span>
+                                        </div>
+
+                                        <!-- Location -->
+                                        <div class="mt-1">
+                                            <span class="text-xs text-gray-600">
+                                                <strong>Loc:</strong> {{ $technician->location }}
+                                            </span>
+                                        </div>
+
+                                        <!-- View profile button -->
+                                        <div class="mt-3">
+                                            <a href="{{ route('technician.details', $technician->id) }}"
+                                                class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-xs px-3 py-2 w-full text-center block">
+                                               View
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-
-                            <!-- Localisation -->
-                            <div class="flex items-center mt-2">
-                                <span class="text-sm text-gray-600">
-                                    <strong>Location :</strong> {{ $technician->location }}
-                                </span>
-                            </div>
-
-                            <!-- Bouton pour voir le profil -->
-                            <div class="mt-4">
-                                <a href="{{ route('technician.details', $technician->id) }}"
-                                    class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-base px-5 py-3 w-full text-center block">
-                                   View profile
-                                </a>
-                            </div>
-                        </div>
+                        @endforeach
                     </div>
-                @endforeach
+                </div>
             </div>
-        </div>
-    @empty
-        <div class="col-span-full text-center py-6">
-            <p class="text-gray-600">No technician available at the moment.</p>
-        </div>
-    @endforelse
+        @empty
+            <div class="col-span-full text-center py-6">
+                <p class="text-gray-600">No technician available at the moment.</p>
+            </div>
+        @endforelse
+    </div>
 </div>
+
+<style>
+    /* Hide scrollbar but allow scrolling */
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+</style>
 @endsection

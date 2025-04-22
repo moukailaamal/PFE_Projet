@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\TechnicienDetail;
+use App\Models\TechnicianDetail;
 use App\Models\CategoryService;
 
 class HomeController extends Controller
@@ -20,7 +20,7 @@ class HomeController extends Controller
         $categories = CategoryService::all(); 
     
         // Construire la requête pour les techniciens
-        $query = TechnicienDetail::with('user');
+        $query = TechnicianDetail::with('user');
     
         // Appliquer les filtres
         if ($search) {

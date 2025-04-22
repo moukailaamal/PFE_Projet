@@ -7,7 +7,7 @@ use App\Models\CategoryService;
 use App\Models\Service;
 use App\Models\User;
 use Illuminate\Http\Request;
-use App\Models\TechnicienDetail;
+use App\Models\TechnicianDetail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -25,7 +25,7 @@ class UserController extends Controller
         $technician = null;
         $catgories=CategoryService::all();
         if ($user->role == 'technician') {
-            $technician = TechnicienDetail::where('user_id', $user->id)->first();
+            $technician = TechnicianDetail::where('user_id', $user->id)->first();
             return view('technician.profile', compact('user', 'technician','catgories'));
         } elseif ($user->role == 'client') {
            
@@ -89,7 +89,7 @@ class UserController extends Controller
     
         // Traitement spécifique aux techniciens
         if ($user->role == 'technician') {
-            $technician = TechnicienDetail::where('user_id', $user->id)->first();
+            $technician = TechnicianDetail::where('user_id', $user->id)->first();
     
             if (!$technician) {
                 return redirect()->route('home')->with('error', 'Détails du technicien introuvables.');
@@ -138,7 +138,7 @@ class UserController extends Controller
         return redirect()->route('profile.form')->with('success', 'Profil mis à jour avec succès.');
     }
     public function InformationTechnician($id) {
-        $technician = TechnicienDetail::findOrFail($id);
+        $technician = TechnicianDetail::findOrFail($id);
         $user = User::findOrFail($technician->user_id);
         
         $services = Service::where('technician_id', $id)->get();
@@ -169,7 +169,7 @@ public function storeAvis(Request $request)
     $technicianUser = User::find($validated['technician_id']);
     
     // Vérifier que c'est bien un technicien
-    $technicianDetail = TechnicienDetail::where('user_id', $technicianUser->id)->first();
+    $technicianDetail = TechnicianDetail::where('user_id', $technicianUser->id)->first();
     
     if (!$technicianDetail) {
         return back()->with('error', 'Utilisateur non trouvé comme technicien');
@@ -193,5 +193,65 @@ public function storeAvis(Request $request)
         return back()->with('error', 'Échec de soumission. Veuillez réessayer.');
     }
 }
-    
+public function deleteAvis($id)
+{
+    // Vérifier que l'utilisateur est authentifié
+    if (!auth()->check()) {
+        return redirect()->route('login')->with('error', 'Veuillez vous connecter pour effectuer cette action');
+    }
+
+    // Récupérer l'avis
+    $avis = Avis::findOrFail($id);
+
+    // Vérifier les permissions (client OU technicien concerné)
+    if (auth()->user()->id !== $avis->client_id && auth()->user()->id !== $avis->technician_id) {
+        return back()->with('error', 'Action non autorisée');
+    }
+
+    try {
+        // Supprimer l'avis
+        $avis->delete();
+
+        return redirect()
+            ->route('technician.details', ['id' => $avis->technician_id])
+            ->with('success', 'Avis supprimé avec succès!');
+
+    } catch (\Exception $e) {
+        \Log::error('Erreur suppression avis: '.$e->getMessage());
+        return back()->with('error', 'Échec de la suppression');
+    }
+}
+public function updateAvis(Request $request, $id)
+{
+    // Vérification d'authentification
+    if (!auth()->check()) {
+        return redirect()->route('login')->with('error', 'Veuillez vous connecter pour modifier un avis');
+    }
+
+    // Récupération de l'avis
+    $avis = Avis::findOrFail($id);
+
+    // Vérification des permissions
+    if (auth()->user()->id !== $avis->client_id) {
+        abort(403, 'Unauthorized action.');
+    }
+
+    // Validation
+    $validated = $request->validate([
+        'rating' => 'required|integer|between:1,5',
+        'comment' => 'required|string|max:500',
+    ]);
+
+    // Mise à jour
+    $avis->update([
+        'rating' => $validated['rating'],
+        'comment' => $validated['comment'],
+        'review_date' => now(),
+    ]);
+
+    // Redirection avec succès
+    return redirect()
+        ->route('technician.details', ['id' => $avis->technician_id])
+        ->with('success', 'Avis mis à jour avec succès!');
+}
 }

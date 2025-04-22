@@ -8,7 +8,7 @@
     <div class="mb-8">
         <h1 class="text-3xl font-bold text-gray-800">My Appointments</h1>
         <p class="text-lg text-gray-600 mt-2">
-            Welcome, <span class="font-semibold">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</span>
+            Welcome, <span class="font-semibold">{{ $client->first_name }} {{ $client->last_name }}</span>
         </p>
     </div>
 

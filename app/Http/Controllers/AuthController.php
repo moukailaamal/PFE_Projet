@@ -6,6 +6,7 @@ use Log;
 use Carbon\Carbon; 
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Models\TechnicianDetail;
 use App\Models\TechnicienDetail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -143,7 +144,7 @@ class AuthController extends Controller
         }
         
            // Création des détails du technicien
-           $technician = new TechnicienDetail();
+           $technician = new TechnicianDetail();
            $technician->user_id = $user->id;
            $technician->certificat_path = $certificat_path;
            $technician->identite_path = $identite_path;
