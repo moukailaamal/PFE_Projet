@@ -77,7 +77,7 @@ require __DIR__.'/auth.php';
 
 Route::get('/sitemap.xml', [SitemapController::class, 'generateSitemap']);
 
-Route::get('/home', [HomeController::class, 'home'])->name('home');
+Route::get('/home', [HomeController::class, 'home'])->name('home')->middleware('verified');
 
 
 Route::get('/register-information-Technicien-form', [AuthController::class, 'showRegistrationFormTechnicien'])->name('register.information.Technicien.form');
