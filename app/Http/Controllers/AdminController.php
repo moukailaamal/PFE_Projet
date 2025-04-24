@@ -36,4 +36,24 @@ class AdminController extends Controller
     
         return redirect()->back()->with('error', 'Only active technicians can be deactivated.');
     }
+
+    public function destroy(User $user)
+    {
+        $this->authorize('delete', $user);
+        
+        // Additional protection against last superAdmin deletion
+        if ($user->role === 'superAdmin') {
+            $superAdminCount = User::where('role', 'superAdmin')->count();
+            
+            if ($superAdminCount <= 1) {
+                return redirect()->back()
+                    ->with('error', 'Cannot delete the last superAdmin account.');
+            }
+        }
+        
+        $user->delete();
+        
+        return redirect()->route('admin.dashboard')
+            ->with('success', 'Account deleted successfully');
+    }
 }

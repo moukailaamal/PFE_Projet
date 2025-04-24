@@ -1,4 +1,3 @@
-
 <nav class="bg-white border-b border-gray-200 fixed z-30 w-full">
     <div class="px-3 py-3 lg:px-5 lg:pl-3">
       <div class="flex items-center justify-between">
@@ -35,8 +34,7 @@
               <!-- Menu déroulant -->
               <div id="dropdown-menu" class="hidden absolute top-full mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
                   <ul class="py-2">
-                      <li><a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">My account</a></li>
-                      <li><a href="{{ route('profile.form') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">My informations</a></li>
+                      <li><a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">My informations</a></li>
                       <li>
                           <form id="logout" action="{{ route('logout') }}" method="POST">
                               @csrf

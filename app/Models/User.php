@@ -25,7 +25,17 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
         'registration_date' => 'datetime',
     ];
-
+    protected static function boot()
+    {
+        parent::boot();
+    
+        static::deleting(function ($user) {
+            if ($user->role === 'superAdmin' && 
+                User::where('role', 'superAdmin')->count() <= 1) {
+                throw new \Exception('Cannot delete the last superAdmin.');
+            }
+        });
+    }
     public function technician()
     {
         return $this->hasOne(TechnicianDetail::class, 'user_id');

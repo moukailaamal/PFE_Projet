@@ -38,6 +38,7 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        
         // Common validation rules for ALL users (clients & technicians)
         $validationRules = [
             'first_name' => 'required|string|max:100',
@@ -73,16 +74,35 @@ class RegisteredUserController extends Controller
         ]);
     
         // Only create TechnicianDetail if role is 'technician'
+       
         if ($request->role === 'technician') {
-            $certificatPath = $request->file('certificat_path')->store('technicians/certificats', 'public');
-            $identitePath = $request->file('identite_path')->store('technicians/identites', 'public');
+            try {
+                // Store files with explicit visibility
+                $certificatPath = $request->file('certificat_path')->storeAs(
+                    'technicians/certificats',
+                    'cert_'.$user->id.'.'.$request->file('certificat_path')->extension(),
+                    'public'
+                );
     
-            TechnicianDetail::create([
-                'user_id' => $user->id,
-                'certificat_path' => $certificatPath,
-                'identite_path' => $identitePath,
-                'verification_status' => 'pending',
-            ]);
+                $identitePath = $request->file('identite_path')->storeAs(
+                    'technicians/identites',
+                    'id_'.$user->id.'.'.$request->file('identite_path')->extension(),
+                    'public'
+                );
+    
+                // Create technician details with explicit field assignment
+                $techDetails = new TechnicianDetail();
+                $techDetails->user_id = $user->id;
+                $techDetails->certificat_path = $certificatPath;
+                $techDetails->identite_path = $identitePath;
+                $techDetails->verification_status = 'pending';
+                $techDetails->save();
+    
+            } catch (\Exception $e) {
+                // Delete user if something fails
+                $user->delete();
+                return back()->with('error', 'File upload failed: '.$e->getMessage());
+            }
         }
     
         event(new Registered($user));

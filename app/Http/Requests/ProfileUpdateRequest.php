@@ -13,25 +13,32 @@ class ProfileUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'first_name' => ['required', 'string', 'max:100'],
-            'last_name' => ['required', 'string', 'max:100'],
-            'email' => [
-                'required',
-                'string',
-                'lowercase',
-                'email',
-                'max:150',
-                Rule::unique(User::class)->ignore($this->user()->id),
-            ],
-            'gender' => ['required', 'in:male,female,other'],
-            'phone_number' => ['nullable', 'string', 'max:15'],
+        $rules = [
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($this->user()->id)],
+            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+            'phone_number' => ['nullable', 'string', 'max:20'],
             'address' => ['nullable', 'string', 'max:255'],
-            
-            // Pour les techniciens seulement
-            'certificat_path' => ['sometimes', 'file', 'mimes:pdf,jpg,png', 'max:2048'],
-            'identite_path' => ['sometimes', 'file', 'mimes:pdf,jpg,png', 'max:2048'],
+            'gender' => ['nullable', 'string', 'in:male,female'],
+            'photo' => ['nullable', 'file', 'mimes:jpg,png', 'max:2048'],
         ];
+    
+        // Add technician-specific validation if user is technician
+        if ($this->user()->role == 'technician') {
+            $rules = array_merge($rules, [
+                'specialty' => ['required', 'string', 'max:255'],
+                'location' => ['required', 'string', 'max:255'],
+                'rate' => ['required', 'numeric', 'min:0'],
+                'availability' => ['required', 'json'],
+                'description' => ['nullable', 'string', 'max:500'],
+                'category_id' => ['required', 'exists:category_services,id'],
+                'certificat_path' => ['nullable', 'file', 'mimes:pdf,jpg,png', 'max:2048'],
+                'identite_path' => ['nullable', 'file', 'mimes:pdf,jpg,png', 'max:2048'],
+            ]);
+        }
+    
+        return $rules;
     }
 
     /**

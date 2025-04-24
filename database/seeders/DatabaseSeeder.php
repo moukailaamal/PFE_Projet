@@ -2,9 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
+use Carbon\Carbon;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -15,9 +17,20 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
+         // Create a test user with your actual schema
+         User::create([
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'email' => 'test@example.com',
+            'password' => Hash::make('password'),
+            'photo' => null,
+            'role' => 'client',
+            'gender' => 'other',
+            'address' => '123 Test Street',
+            'phone_number' => '+1234567890',
+            'status' => 'active',
+            'registration_date' => Carbon::now(),
+            'email_verified_at' => Carbon::now(),
         ]);
     }
 }

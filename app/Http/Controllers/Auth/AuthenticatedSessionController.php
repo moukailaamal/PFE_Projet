@@ -19,6 +19,8 @@ class AuthenticatedSessionController extends Controller
         return view('auth.login');
     }
 
+  
+
     /**
      * Handle an incoming authentication request.
      */
@@ -28,8 +30,10 @@ class AuthenticatedSessionController extends Controller
 
       // Redirection basée sur le rôle
     $redirectTo = match(Auth::user()->role) {
-        'technician' => route('technician.home'),
+        'technician' => route('home'),
         'admin' => route('home'),
+        'superAdmin' => route('home'),
+
         default => route('home')
     };
 

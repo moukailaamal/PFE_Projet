@@ -1,4 +1,4 @@
-<section>
+<section class="max-w-xl">
     <header>
         <h2 class="text-lg font-medium text-gray-900">
             {{ __('Update Password') }}
@@ -14,35 +14,63 @@
         @method('put')
 
         <div>
-            <x-input-label for="update_password_current_password" :value="__('Current Password')" />
-            <x-text-input id="update_password_current_password" name="current_password" type="password" class="mt-1 block w-full" autocomplete="current-password" />
-            <x-input-error :messages="$errors->updatePassword->get('current_password')" class="mt-2" />
+            <label for="update_password_current_password" class="block font-medium text-sm text-gray-700">
+                {{ __('Current Password') }}
+            </label>
+            <input id="update_password_current_password" name="current_password" type="password" 
+                   class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
+                   autocomplete="current-password" />
+            @if ($errors->updatePassword->get('current_password'))
+                <p class="mt-2 text-sm text-red-600">
+                    {{ $errors->updatePassword->first('current_password') }}
+                </p>
+            @endif
         </div>
 
         <div>
-            <x-input-label for="update_password_password" :value="__('New Password')" />
-            <x-text-input id="update_password_password" name="password" type="password" class="mt-1 block w-full" autocomplete="new-password" />
-            <x-input-error :messages="$errors->updatePassword->get('password')" class="mt-2" />
+            <label for="update_password_password" class="block font-medium text-sm text-gray-700">
+                {{ __('New Password') }}
+            </label>
+            <input id="update_password_password" name="password" type="password" 
+                   class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
+                   autocomplete="new-password" />
+            @if ($errors->updatePassword->get('password'))
+                <p class="mt-2 text-sm text-red-600">
+                    {{ $errors->updatePassword->first('password') }}
+                </p>
+            @endif
         </div>
 
         <div>
-            <x-input-label for="update_password_password_confirmation" :value="__('Confirm Password')" />
-            <x-text-input id="update_password_password_confirmation" name="password_confirmation" type="password" class="mt-1 block w-full" autocomplete="new-password" />
-            <x-input-error :messages="$errors->updatePassword->get('password_confirmation')" class="mt-2" />
+            <label for="update_password_password_confirmation" class="block font-medium text-sm text-gray-700">
+                {{ __('Confirm Password') }}
+            </label>
+            <input id="update_password_password_confirmation" name="password_confirmation" type="password" 
+                   class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
+                   autocomplete="new-password" />
+            @if ($errors->updatePassword->get('password_confirmation'))
+                <p class="mt-2 text-sm text-red-600">
+                    {{ $errors->updatePassword->first('password_confirmation') }}
+                </p>
+            @endif
         </div>
 
         <div class="flex items-center gap-4">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
-
-            @if (session('status') === 'password-updated')
-                <p
-                    x-data="{ show: true }"
-                    x-show="show"
-                    x-transition
-                    x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-gray-600"
-                >{{ __('Saved.') }}</p>
-            @endif
-        </div>
+            <!-- Primary Button -->
+            <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200">
+              Save
+            </button>
+          
+            <!-- Password Updated Status Message (conditionally shown) -->
+            <div 
+              x-data="{ show: false }" 
+              x-show="show" 
+              x-transition 
+              x-init="setTimeout(() => show = false, 2000)" 
+              class="text-sm text-gray-600"
+            >
+              Saved.
+            </div>
+          </div>
     </form>
 </section>

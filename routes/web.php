@@ -13,6 +13,7 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PaiementController;
+use App\Http\Controllers\AdminAuthController;
 
 
 Route::get('/', function () {
@@ -22,13 +23,20 @@ Auth::routes(['verify' => true]);
 
 Route::middleware(['auth', 'verified'])->group(function () {
   
-    
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+
+  //  Route::get('/profileForm', [UserController::class, 'profile'])->name('profile.form');
+  //  Route::put('/profile/update/{id}', [UserController::class, 'update'])->name('profile.update');
+
+
     Route::post('/send-message', [ChatController::class, 'sendMessage'])->name('send-message');
     Route::get('/listsMessages/{id}', [ChatController::class, 'indexListMessage'])->name('listsMessages');
 Route::get('/chat/{id}', [ChatController::class, 'indexMessage'])->name('chat');
 
-Route::get('/profile', [UserController::class, 'profile'])->name('profile.form');
-Route::put('/profile/update/{id}', [UserController::class, 'update'])->name('profile.update');
+
 
 Route::post('/reviews', [UserController::class, 'storeAvis'])->name('store.review');
 Route::put('/reviews/{review}', [UserController::class, 'updateAvis'])->name('update.review');
@@ -48,7 +56,7 @@ Route::delete('/reviews/{review}', [UserController::class, 'deleteAvis'])->name(
     
     Route::get('/confirmation/{id}', [BookController::class, 'confirmation'])->name('book.confirmation');
     
-    
+    //Appointment
     Route::get('/listAppointments/tech/{id}', [BookController::class, 'listAppointmentsTech'])->name('book.listAppointmentsTech');
     Route::get('/listAppointments/client/{id}', [BookController::class, 'listAppointmentsClient'])->name('book.listAppointmentsClient');
     Route::get('/listAppointments/admin', [BookController::class, 'listAllAppointement'])->name('book.listAppointmentsAdmin');
@@ -87,5 +95,27 @@ Route::post('/register-information-Technicien', [AuthController::class, 'registe
 
 
 Route::get('/details/{id}', [UserController::class, 'InformationTechnician'])->name('technician.details');
- 
 
+Route::prefix('admin')->group(function() {
+    // Authentication Routes
+    Route::get('/login', [AdminAuthController::class, 'showLoginForm'])->name('admin.login');
+    Route::post('/login', [AdminAuthController::class, 'login']);
+    
+    // Protected admin routes
+    Route::middleware(['auth', 'admin'])->group(function() {
+        Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
+        Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+        
+        // Admin registration routes protected by policy
+        Route::middleware('can:registerAdmin,App\Models\User')->group(function() {
+            Route::get('/register', [AdminAuthController::class, 'showRegistrationForm'])->name('admin.register');
+            Route::post('/register', [AdminAuthController::class, 'register']);
+        // delete 
+        Route::delete('/users/{user}', [AdminController::class, 'destroy'])
+        ->name('admin.users.destroy')
+        ->middleware('can:delete,user'); 
+        
+        
+        });
+    });
+});
