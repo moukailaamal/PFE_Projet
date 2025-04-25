@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Confirm Your Password')
 
+@include('layouts.partials.navbar-dashboard')  
 @section('content')
 <div class="mx-auto md:h-screen flex flex-col justify-center items-center px-6 pt-8 md-0 mt-16">
     <!-- Logo et Titre -->

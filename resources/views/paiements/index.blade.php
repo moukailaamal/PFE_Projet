@@ -1,5 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Payment index')
+
+@include('layouts.partials.navbar-dashboard')  
 @section('content')
 <div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl">

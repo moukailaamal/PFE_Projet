@@ -7,11 +7,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class EnsureIsSuperAdmin
+class EnsureIsAdmin
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::user()->role !== 'superAdmin') {
+        if (!Auth::check() || !in_array(Auth::user()->role, ['admin', 'superAdmin'])) {
             abort(403, 'Unauthorized action.');
         }
 

@@ -32,9 +32,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
   //  Route::put('/profile/update/{id}', [UserController::class, 'update'])->name('profile.update');
 
 
-    Route::post('/send-message', [ChatController::class, 'sendMessage'])->name('send-message');
-    Route::get('/listsMessages/{id}', [ChatController::class, 'indexListMessage'])->name('listsMessages');
-Route::get('/chat/{id}', [ChatController::class, 'indexMessage'])->name('chat');
+            Route::post('/send-message', [ChatController::class, 'sendMessage'])->name('send-message');
+            Route::get('/listsMessages/{id}', [ChatController::class, 'indexListMessage'])->name('listsMessages');
+        Route::get('/chat/{id}', [ChatController::class, 'indexMessage'])->name('chat');
 
 
 
@@ -59,16 +59,11 @@ Route::delete('/reviews/{review}', [UserController::class, 'deleteAvis'])->name(
     //Appointment
     Route::get('/listAppointments/tech/{id}', [BookController::class, 'listAppointmentsTech'])->name('book.listAppointmentsTech');
     Route::get('/listAppointments/client/{id}', [BookController::class, 'listAppointmentsClient'])->name('book.listAppointmentsClient');
-    Route::get('/listAppointments/admin', [BookController::class, 'listAllAppointement'])->name('book.listAppointmentsAdmin');
     
     Route::put('/reservations/{id}/cancel', [BookController::class, 'canceled'])->name('book.cancel');
     Route::put('/reservations/{id}/reactivate', [BookController::class, 'reactivate'])->name('book.reactivate');
     Route::put('/reservations/{id}/confirmed', [BookController::class, 'confirmed'])->name('book.confirmed');
     Route::put('/reservations/{id}/completed', [BookController::class, 'completed'])->name('book.completed');
-    
-    Route::get('list-tech', [AdminController::class, 'listTechnician'])->name('technician.list');
-    Route::put('/technician/{id}/activate', [AdminController::class, 'activeTechnicianStatus'])->name('technician.activateStatus');
-    Route::put('/technician/{id}/deactivate', [AdminController::class, 'inactiveTechnicianStatus'])->name('technician.inactivateStatus');
     
     
     
@@ -96,26 +91,47 @@ Route::post('/register-information-Technicien', [AuthController::class, 'registe
 
 Route::get('/details/{id}', [UserController::class, 'InformationTechnician'])->name('technician.details');
 
+// Public admin routes (no auth required)
 Route::prefix('admin')->group(function() {
-    // Authentication Routes
-    Route::get('/login', [AdminAuthController::class, 'showLoginForm'])->name('admin.login');
-    Route::post('/login', [AdminAuthController::class, 'login']);
+    Route::middleware('guest')->group(function() {
+        Route::get('/login', [AdminAuthController::class, 'showLoginForm'])
+            ->name('admin.login');
+        Route::post('/login', [AdminAuthController::class, 'login']);
+    });
+});
+
+// Protected admin routes (require auth + admin role)
+Route::prefix('admin')->middleware([
+    \Illuminate\Auth\Middleware\Authenticate::class, // 'auth' alias
+    \App\Http\Middleware\EnsureIsAdmin::class       // 'admin' alias
+])->group(function() {
+    Route::post('/logout', [AdminAuthController::class, 'logout'])
+        ->name('admin.logout');
     
-    // Protected admin routes
-    Route::middleware(['auth', 'admin'])->group(function() {
-        Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
-        Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
-        
-        // Admin registration routes protected by policy
         Route::middleware('can:registerAdmin,App\Models\User')->group(function() {
-            Route::get('/register', [AdminAuthController::class, 'showRegistrationForm'])->name('admin.register');
+            Route::get('/register', [AdminAuthController::class, 'showRegistrationForm'])
+                ->name('admin.register');
             Route::post('/register', [AdminAuthController::class, 'register']);
-        // delete 
-        Route::delete('/users/{user}', [AdminController::class, 'destroy'])
-        ->name('admin.users.destroy')
-        ->middleware('can:delete,user'); 
-        
-        
+        });
+    
+    // Common admin routes
+    Route::get('/listAppointments', [AdminController::class, 'listAllAppointement'])
+        ->name('book.listAppointmentsAdmin');
+    
+    // Technician management
+    Route::prefix('technicians')->group(function() {
+        Route::get('list', [AdminController::class, 'listTechnician'])
+            ->name('technician.list');
+        Route::middleware('can:manageTechnicians,App\Models\User')->group(function() {
+            Route::put('/{id}/activate', [AdminController::class, 'activeTechnicianStatus'])
+                ->name('technician.activateStatus');
+            Route::put('/{id}/deactivate', [AdminController::class, 'inactiveTechnicianStatus'])
+                ->name('technician.inactivateStatus');
         });
     });
+    
+    // User deletion (protected by policy)
+    Route::delete('/users/{user}', [AdminController::class, 'destroy'])
+        ->name('admin.users.destroy')
+        ->middleware('can:delete,user');
 });

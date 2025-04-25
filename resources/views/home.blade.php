@@ -2,6 +2,8 @@
 
 @section('title', 'Home')
 
+@include('layouts.partials.navbar-dashboard')  
+@include('layouts.partials.sidebar') 
 @section('content')
 <div class="container mx-auto px-4 py-8 mt-16">
     <!-- Titre et section de recherche -->

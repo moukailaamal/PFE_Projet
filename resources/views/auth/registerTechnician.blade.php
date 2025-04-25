@@ -2,6 +2,7 @@
 
 @section('title', 'Create your account')
 
+@include('layouts.partials.navbar-dashboard')  
 @section('content')
 <div class="min-h-screen flex flex-col justify-center items-center px-6 pt-8">
     @if(session('success'))

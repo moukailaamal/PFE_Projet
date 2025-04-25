@@ -1,66 +1,73 @@
 @extends('layouts.app')
+@section('title', 'Login to Your Account')
 
+@include('layouts.partials.navbar-dashboard')  
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Admin Login') }}</div>
+<div class="mx-auto md:h-screen flex flex-col justify-center items-center px-6 pt-8 md-0 mt-16">
+    <!-- Logo et Titre -->
+    <a href="#" class="text-2xl font-semibold flex justify-center items-center mb-8 lg:mb-10">
+        <img src="/images/logo.svg" class="h-10 mr-4" alt="Logo Windster">
+        <span class="self-center text-2xl font-bold whitespace-nowrap">Tuni-repair</span> 
+    </a>
 
-                <div class="card-body">
-                    <form method="POST" action="{{ route('admin.login') }}">
-                        @csrf
+    <!-- Card -->
+    <div class="bg-white shadow-lg rounded-lg md:mt-0 w-full sm:max-w-screen-sm xl:p-0">
+        <div class="p-6 sm:p-8 lg:p-16 space-y-8">
+            <h2 class="text-2xl lg:text-3xl font-bold text-gray-900">
+                Welcome, dear administrator. Sign in to your account.
+             </h2>
 
-                        <div class="row mb-3">
-                            <label for="email" class="col-md-4 col-form-label text-md-end">{{ __('Email Address') }}</label>
+            <!-- Formulaire de connexion -->
+            <form class="mt-8 space-y-6" method="POST" action="{{ route('admin.login') }}">
+                @csrf
 
-                            <div class="col-md-6">
-                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
+                <!-- Message de session -->
+                @if (session('status'))
+                    <div class="text-green-600 text-sm font-medium">
+                        {{ session('status') }}
+                    </div>
+                @endif
 
-                                @error('email')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <label for="password" class="col-md-4 col-form-label text-md-end">{{ __('Password') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
-
-                                @error('password')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-6 offset-md-4">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
-
-                                    <label class="form-check-label" for="remember">
-                                        {{ __('Remember Me') }}
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row mb-0">
-                            <div class="col-md-8 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
-                                    {{ __('Login') }}
-                                </button>
-                            </div>
-                        </div>
-                    </form>
+                <!-- Champ Email -->
+                <div>
+                    <x-input-label for="email" :value="__('Your email')" />
+                    <x-text-input id="email" type="email" name="email" class="block mt-1 w-full" 
+                        :value="old('email')" required autofocus autocomplete="username" />
+                    <x-input-error :messages="$errors->get('email')" class="mt-2" />
                 </div>
-            </div>
+
+                <!-- Champ Mot de passe -->
+                <div class="mt-4">
+                    <x-input-label for="password" :value="__('Your password')" />
+                    <x-text-input id="password" type="password" name="password" class="block mt-1 w-full" 
+                        required autocomplete="current-password" />
+                    <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                </div>
+
+                <!-- Checkbox "Se souvenir de moi" -->
+                <div class="flex items-start mt-4">
+                    <div class="flex items-center h-5">
+                        <input id="remember" aria-describedby="remember" name="remember" type="checkbox"
+                            class="bg-gray-50 border-gray-300 focus:ring-3 focus:ring-cyan-200 h-4 w-4 rounded" />
+                    </div>
+                    <div class="text-sm ml-3">
+                        <label for="remember" class="font-medium text-gray-900">Remember me</label>
+                    </div>
+                    @if (Route::has('password.request'))
+                        <a href="{{ route('password.request') }}"
+                            class="text-sm text-teal-500 hover:underline ml-auto">Lost Password?</a>
+                    @endif
+                </div>
+
+                <!-- Bouton de soumission avec couleur personnalisée -->
+                <button type="submit"
+                    class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-base px-5 py-3 w-full sm:w-auto text-center">
+                    Login to your account
+                </button>
+
+              
+            </form>
+
         </div>
     </div>
 </div>

@@ -20,11 +20,7 @@
     <title>@yield('title', 'My Application')</title>
 </head>
 <body>
-    <!-- Partials -->
-    @include('layouts.partials.header')
-    @include('layouts.partials.stylesheet')
-    @include('layouts.partials.navbar-dashboard')  
-    @include('layouts.partials.sidebar')   
+  
 
     <!-- Main content -->
     <div class="p-4 w-full md:ml-64 md:w-auto transition-all duration-300">

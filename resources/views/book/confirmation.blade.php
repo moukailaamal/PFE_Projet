@@ -2,6 +2,7 @@
 
 @section('title', 'Booking Confirmation')
 
+@include('layouts.partials.navbar-dashboard')  
 @section('content')
 <div class="container mx-auto p-4 mt-16">
     <div class="bg-white shadow-lg rounded-lg overflow-hidden">

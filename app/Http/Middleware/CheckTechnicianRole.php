@@ -12,7 +12,7 @@ class CheckTechnicianRole
     {
         // Vérifie si l'utilisateur est un technicien actif
         if ($request->user()->role !== 'technician') {
-            return redirect()->route('dashboard');
+            return redirect()->route('home');
         }
 
       

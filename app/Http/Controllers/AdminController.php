@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Reservation;
 
 class AdminController extends Controller
 {
@@ -12,7 +13,14 @@ class AdminController extends Controller
         return view('admin.listTechnician', compact('technicians'));
     }
     
-
+    public function listAllAppointement(){
+        $users=User::all();
+        $reservations = Reservation::with(['client', 'technician'])
+        ->orderBy('appointment_date', 'asc')
+        ->get();
+    
+        return view('admin.listAppointmentsAdmin', compact('users', 'reservations'));
+    }
     public function activeTechnicianStatus($id)
     {
         $technician = User::findOrFail($id);

@@ -2,6 +2,7 @@
 
 @section('title', 'Payment Method')
 
+@include('layouts.partials.navbar-dashboard')  
 @section('content')
 <div class="container py-5">
     <div class="row justify-content-center">

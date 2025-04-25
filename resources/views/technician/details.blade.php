@@ -2,6 +2,7 @@
 
 @section('title', 'Technician Details')
 
+@include('layouts.partials.navbar-dashboard')  
 @section('content')
 <div class="w-full grid grid-cols-1 xl:grid-cols-4 gap-4 mt-16">
     <!-- Main Section (Technician Details) -->

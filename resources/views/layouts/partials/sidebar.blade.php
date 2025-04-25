@@ -42,7 +42,7 @@
                 <!-- ==================== -->
                 <ul class="space-y-2 pb-2">
                     
-                    <!-- Accueil -->
+                    <!-- Accueil (Visible pour tous) -->
                     <li>
                         <a href="{{ route('home') }}" class="text-base text-gray-900 font-normal rounded-lg flex items-center p-2 hover:bg-gray-100 group">
                             <svg class="w-6 h-6 text-gray-500 group-hover:text-gray-900 transition duration-75" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -52,7 +52,9 @@
                         </a>
                     </li>
 
-                    <!-- Elements conditionnels selon le rôle -->
+                    <!-- ==================== -->
+                    <!-- MENU TECHNICIEN -->
+                    <!-- ==================== -->
                     @auth
                         @if(Auth::user()->role == "technician")
                             <!-- Rendez-vous (Technicien) -->
@@ -84,8 +86,14 @@
                                     <span class="ml-3">Service</span>
                                 </a>
                             </li>
+                        @endif
+                    @endauth
 
-                        @elseif (Auth::user()->role == "client")
+                    <!-- ==================== -->
+                    <!-- MENU CLIENT -->
+                    <!-- ==================== -->
+                    @auth
+                        @if(Auth::user()->role == "client")
                             <!-- Rendez-vous (Client) -->
                             <li>
                                 <a href="{{ route('book.listAppointmentsClient', Auth::user()->id) }}" class="text-base text-gray-900 font-normal rounded-lg flex items-center p-2 hover:bg-gray-100 group">
@@ -98,6 +106,9 @@
                         @endif
                     @endauth
 
+                    <!-- ==================== -->
+                    <!-- MENU COMMUN -->
+                    <!-- ==================== -->
                     <!-- Liste des techniciens (Visible pour tous) -->
                     <li>
                         <a href="{{ route('technician.list') }}" class="text-base text-gray-900 font-normal rounded-lg flex items-center p-2 hover:bg-gray-100 group">
@@ -108,6 +119,7 @@
                         </a>
                     </li>
 
+                    <!-- Tous les rendez-vous (Visible pour admin ou selon besoin) -->
                     <li>
                         <a href="{{ route('book.listAppointmentsAdmin') }}" class="text-base text-gray-900 font-normal rounded-lg flex items-center p-2 hover:bg-gray-100 group">
                             <svg class="w-6 h-6 text-gray-500 group-hover:text-gray-900 transition duration-75" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -116,8 +128,12 @@
                             <span class="ml-3">All appointment</span>
                         </a>
                     </li>
-                    <!-- Profil (Connecté seulement) -->
+
+                    <!-- ==================== -->
+                    <!-- MENU UTILISATEUR CONNECTÉ -->
+                    <!-- ==================== -->
                     @auth
+                    <!-- Profil -->
                     <li>
                         <a href="{{ route('profile.edit') }}" class="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group @if($page_slug == 'inbox') bg-gray-100 @endif">
                             <svg class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-gray-900 transition duration-75" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">

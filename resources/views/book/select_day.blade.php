@@ -2,6 +2,8 @@
 
 @section('title', 'Book day now')
 
+@include('layouts.partials.navbar-dashboard')  
+@include('layouts.partials.sidebar') 
 @section('content')
 <div class="container mx-auto p-4">
     <h1 class="text-2xl font-bold mb-4">Book now</h1>

@@ -252,14 +252,7 @@ class BookController extends Controller
         return view('book.listAppointmentsClient', compact('reservations','client'));
     }
  
-    public function listAllAppointement(){
-        $users=User::all();
-        $reservations = Reservation::with(['client', 'technician'])
-        ->orderBy('appointment_date', 'asc')
-        ->get();
-    
-        return view('book.listAppointmentsAdmin', compact('users', 'reservations'));
-    }
+  
     
     public function confirmed($id)
     {
