@@ -5,7 +5,7 @@
 @section('content')
 <div class="mx-auto md:h-screen flex flex-col justify-center items-center px-6 pt-8 md-0 mt-16">
     <!-- Logo et Titre -->
-    <a href="#" class="text-2xl font-semibold flex justify-center items-center mb-8 lg:mb-10">
+    <a href="{{ route('home') }}" class="text-2xl font-semibold flex justify-center items-center mb-8 lg:mb-10">
         <img src="/images/logo.svg" class="h-10 mr-4" alt="Logo Windster">
         <span class="self-center text-2xl font-bold whitespace-nowrap">Tuni-repair</span> 
     </a>

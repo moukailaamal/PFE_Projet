@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Illuminate\Validation\ValidationException;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -19,8 +20,6 @@ class AuthenticatedSessionController extends Controller
         return view('auth.login');
     }
 
-  
-
     /**
      * Handle an incoming authentication request.
      */
@@ -28,16 +27,22 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
 
-      // Redirection basée sur le rôle
-    $redirectTo = match(Auth::user()->role) {
-        'technician' => route('home'),
-        'admin' => route('home'),
-        'superAdmin' => route('home'),
+        // Check if user has allowed role
+        if (!in_array(Auth::user()->role, ['technician', 'client'])) {
+            Auth::guard('web')->logout();
+            throw ValidationException::withMessages([
+                'email' => __('auth.unauthorized_role'),
+            ]);
+        }
 
-        default => route('home')
-    };
+        // Role-based redirection
+        $redirectTo = match(Auth::user()->role) {
+            'technician' => route('home'),
+            'client' => route('home'),
+            default => route('home')
+        };
 
-    return redirect()->intended($redirectTo);
+        return redirect()->intended($redirectTo);
     }
 
     /**

@@ -67,7 +67,7 @@ Route::delete('/reviews/{review}', [UserController::class, 'deleteAvis'])->name(
     
     
     
-    Route::get('/paymentsOneline/{id}', [PaiementController::class, 'indexPaiement'])->name('payments.index');
+    Route::get('/paymentsOnline/{id}', [PaiementController::class, 'indexPaiement'])->name('payments.index');
     Route::get('/paymentsMethode/{id}', [PaiementController::class, 'indexPaymentMethod'])->name('payments.PaymentMethod');
     
     Route::post('/payments/{id}', [PaiementController::class, 'storePaiement'])->name('payments.store');
@@ -80,7 +80,7 @@ require __DIR__.'/auth.php';
 
 Route::get('/sitemap.xml', [SitemapController::class, 'generateSitemap']);
 
-Route::get('/home', [HomeController::class, 'home'])->name('home')->middleware('verified');
+Route::get('/home', [HomeController::class, 'home'])->name('home');
 
 
 Route::get('/register-information-Technicien-form', [AuthController::class, 'showRegistrationFormTechnicien'])->name('register.information.Technicien.form');
@@ -113,11 +113,13 @@ Route::prefix('admin')->middleware([
                 ->name('admin.register');
             Route::post('/register', [AdminAuthController::class, 'register']);
         });
+        Route::get('/listAdmins', [AdminController::class, 'listAdmin'])
+        ->name('admin.listAdmins');
     
     // Common admin routes
     Route::get('/listAppointments', [AdminController::class, 'listAllAppointement'])
         ->name('book.listAppointmentsAdmin');
-    
+      
     // Technician management
     Route::prefix('technicians')->group(function() {
         Route::get('list', [AdminController::class, 'listTechnician'])

@@ -3,6 +3,8 @@
 @section('title', 'My Account')
 
 @include('layouts.partials.navbar-dashboard')  
+@include('layouts.partials.sidebar') 
+
 @section('content')
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">

@@ -21,7 +21,7 @@
     <div class="bg-white shadow-lg rounded-lg md-0 mt-16 w-full sm:max-w-screen-sm xl:p-0">
         <div class="p-6 sm:p-8 lg:p-16 space-y-8">
 
-            <a href="/" class="text-2xl font-semibold flex justify-center items-center mb-8 lg:mb-10">
+            <a href="{{ route('home') }}" class="text-2xl font-semibold flex justify-center items-center mb-8 lg:mb-10">
                 <img src="/images/logo.svg" class="h-10 mr-4" alt="TuniRepair Logo">
                 <span class="self-center text-2xl font-bold whitespace-nowrap">Tuni repair</span> 
             </a>

@@ -4,12 +4,38 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Reservation;
+use Illuminate\Support\Facades\Gate;
 
 class AdminController extends Controller
 {
+
+    public function destroy(User $user)
+    {
+        Gate::authorize('delete', $user);
+        
+        // Additional protection against last superAdmin deletion
+        if ($user->role === 'superAdmin') {
+            $superAdminCount = User::where('role', 'superAdmin')->count();
+            
+            if ($superAdminCount <= 1) {
+                return redirect()->back()
+                    ->with('error', 'Cannot delete the last superAdmin account.');
+            }
+        }
+        
+        $user->delete();
+        
+        return redirect()->route('home')
+            ->with('success', 'Account deleted successfully');
+    }
+    public function listAdmin() 
+    {
+        $admins = User::where('role', 'admin')->paginate(10); 
+        return view('admin.listAdmins', compact('admins'));
+    }
     public function listTechnician() 
     {
-        $technicians = User::where('role', 'technician')->with('technician')->get();
+        $technicians = User::where('role', 'technician')->with('technician')->paginate(10);
         return view('admin.listTechnician', compact('technicians'));
     }
     
@@ -19,7 +45,7 @@ class AdminController extends Controller
         ->orderBy('appointment_date', 'asc')
         ->get();
     
-        return view('admin.listAppointmentsAdmin', compact('users', 'reservations'));
+        return view('admin.listsAllAppointments', compact('users', 'reservations'));
     }
     public function activeTechnicianStatus($id)
     {
@@ -45,23 +71,6 @@ class AdminController extends Controller
         return redirect()->back()->with('error', 'Only active technicians can be deactivated.');
     }
 
-    public function destroy(User $user)
-    {
-        $this->authorize('delete', $user);
-        
-        // Additional protection against last superAdmin deletion
-        if ($user->role === 'superAdmin') {
-            $superAdminCount = User::where('role', 'superAdmin')->count();
-            
-            if ($superAdminCount <= 1) {
-                return redirect()->back()
-                    ->with('error', 'Cannot delete the last superAdmin account.');
-            }
-        }
-        
-        $user->delete();
-        
-        return redirect()->route('admin.dashboard')
-            ->with('success', 'Account deleted successfully');
-    }
+   
+    
 }
