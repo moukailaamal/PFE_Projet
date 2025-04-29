@@ -28,20 +28,22 @@ class MessageSent implements ShouldBroadcast
      * @return array<int, \Illuminate\Broadcasting\Channel>
      */
   
-    public function broadcastOn()
-    {
-        return new Channel('chat-room');  // Le nom du channel Pusher
-    }
-
-
-
-    public function broadcastWith()
-{
-    return [
-        'message' => $this->message->message,
-        'sender_id' => $this->message->sender_id,
-        'receiver_id'=>$this->message->receiver_id,
-    ];
-}
+     public function broadcastWith()
+     {
+         return [
+             'message' => $this->message,
+             'sender_name' => $this->message->sender->first_name,
+             'sender_photo' => $this->message->sender->photo ? 
+                              asset('storage/' . $this->message->sender->photo) : 
+                              asset('images/default-avatar.png'),
+             'sender_id' => $this->message->sender_id,
+             'receiver_id' => $this->message->receiver_id
+         ];
+     }
+     
+     public function broadcastOn()
+     {
+         return new Channel('chat-room'); // Keeping the channel name as chat-room
+     }
 
 }

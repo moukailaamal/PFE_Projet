@@ -8,7 +8,7 @@ class TechnicianDetail extends Model
     protected $table = 'technicians_details'; 
     protected $fillable = [
         'user_id', 'specialty',  'location', 'category_id', 
-        'rate', 'availability', 'certifications', 'description', 
+        'price', 'availability', 'certifications', 'description', 
         'certificate_path', 'identity_path', 'verification_status'
     ];
     

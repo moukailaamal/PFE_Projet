@@ -31,91 +31,73 @@ class ProfileController extends Controller
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
-{
-    $user = $request->user();
-    
-    // Update basic fields from the validated request
-    $user->fill($request->validated());
-
-    // Handle email verification
-    if ($user->isDirty('email')) {
-        $user->email_verified_at = null;
-    }
-
-    // Handle profile photo upload
-    if ($request->hasFile('photo')) {
-        // Delete old photo if exists
-        if ($user->photo) {
-            Storage::disk('public')->delete($user->photo);
-        }
-        // Store new photo
-        $user->photo = $request->file('photo')->store('user_photos', 'public');
-    }
-
-    // Handle password update if provided
-    if ($request->filled('password')) {
-        $user->password = Hash::make($request->password);
-    }
-
-    // Save the user
-    $user->save();
-
-    // Handle technician-specific updates
-    if ($user->role == 'technician') {
-        $technician = TechnicianDetail::where('user_id', $user->id)->firstOrFail();
-
-        // Validate technician-specific fields
-        $technicianData = $request->validate([
-            'specialty' => 'required|string|max:255',
-            'location' => 'required|string|max:255',
-            'rate' => 'required|numeric|min:0',
-            'availability' => 'required|json',
-            'description' => 'nullable|string|max:500',
-            'category_id' => 'required|exists:category_services,id',
+    public function update(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+        
+        // Validation
+        $validated = $request->validate([
+            // ... your validation rules from above ...
         ]);
-
-        // Validate availability JSON
-        $availability = json_decode($technicianData['availability'], true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            return redirect()->back()
-                ->withErrors(['availability' => 'Le format JSON est invalide.'])
-                ->withInput();
-        }
-
-        foreach ($availability as $slot) {
-            if (!isset($slot['day']) || !isset($slot['start_time']) || !isset($slot['end_time'])) {
-                return redirect()->back()
-                    ->withErrors(['availability' => 'La structure JSON est incorrecte.'])
-                    ->withInput();
+    
+        // Update user fields if they exist in the request
+        $userFields = ['first_name', 'last_name', 'email', 'phone_number', 'address', 'gender'];
+        foreach ($userFields as $field) {
+            if ($request->has($field)) {
+                $user->$field = $request->input($field);
             }
         }
-
-        // Update technician details
-        $technician->update($technicianData);
-
-        // Handle technician files
-        if ($request->hasFile('certificat_path')) {
-            if ($technician->certificat_path) {
-                Storage::disk('public')->delete($technician->certificat_path);
+    
+        // Handle photo upload
+        if ($request->hasFile('photo')) {
+            if ($user->photo) {
+                Storage::disk('public')->delete($user->photo);
             }
-            $technician->certificat_path = $request->file('certificat_path')
-                ->store('technicians_certificats', 'public');
+            $user->photo = $request->file('photo')->store('user_photos', 'public');
         }
-
-        if ($request->hasFile('identite_path')) {
-            if ($technician->identite_path) {
-                Storage::disk('public')->delete($technician->identite_path);
+    
+        $user->save();
+    
+        // Handle technician fields
+        if ($user->role == 'technician') {
+            $technician = TechnicianDetail::where('user_id', $user->id)->firstOrFail();
+    
+            $technicianFields = ['specialty', 'price', 'location', 'description', 'category_id'];
+            foreach ($technicianFields as $field) {
+                if ($request->has($field)) {
+                    $technician->$field = $request->input($field);
+                }
             }
-            $technician->identite_path = $request->file('identite_path')
-                ->store('technicians_identite', 'public');
+    
+            // Handle availability
+            if ($request->has('availability')) {
+                $availability = json_decode($request->input('availability'), true);
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    $technician->availability = $request->input('availability');
+                }
+            }
+    
+            // Handle file uploads
+            if ($request->hasFile('certificat_path')) {
+                if ($technician->certificat_path) {
+                    Storage::disk('public')->delete($technician->certificat_path);
+                }
+                $technician->certificat_path = $request->file('certificat_path')->store('technicians_certificats', 'public');
+            }
+    
+            if ($request->hasFile('identite_path')) {
+                if ($technician->identite_path) {
+                    Storage::disk('public')->delete($technician->identite_path);
+                }
+                $technician->identite_path = $request->file('identite_path')->store('technicians_identite', 'public');
+            }
+    
+            $technician->save();
         }
-
-        $technician->save();
+    
+        return redirect()->route('profile.edit')->with('status', 'Profile updated successfully');
     }
 
-    return Redirect::route('profile.edit')->with('status', 'profile-updated');
-}
     /**
      * Delete the user's account.
      */

@@ -117,12 +117,12 @@
                         @enderror
                     </div>
 
-                    <!-- Rate -->
+                    
                     <div>
-                        <label for="rate" class="text-sm font-medium text-gray-900 block mb-2">Rate</label>
-                        <input type="text" name="rate" id="rate" value="{{ old('rate', $technician->rate ?? '') }}"
+                        <label for="price" class="text-sm font-medium text-gray-900 block mb-2">Price</label>
+                        <input type="text" name="price" id="price" value="{{ old('price', $technician->price ?? '') }}"
                             class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" required>
-                        @error('rate')
+                        @error('price')
                             <div class="text-red-500 mt-2">{{ $message }}</div>
                         @enderror
                     </div>

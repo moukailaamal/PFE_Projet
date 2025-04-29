@@ -108,7 +108,7 @@
                 <p class="text-lg font-semibold text-gray-700">Experience</p>
                 <div class="mt-4 space-y-2">
                     <p><strong>Specialty :</strong> {{ $technician->specialty }}</p>
-                    <p><strong>Rate :</strong> {{ $technician->rate }}$</p>
+                    <p><strong>price for each service :</strong> {{ $technician->price }}$</p>
                 </div>
             </div>
             <div class="mt-6">

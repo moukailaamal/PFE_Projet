@@ -29,7 +29,7 @@ class ProfileUpdateRequest extends FormRequest
             $rules = array_merge($rules, [
                 'specialty' => ['required', 'string', 'max:255'],
                 'location' => ['required', 'string', 'max:255'],
-                'rate' => ['required', 'numeric', 'min:0'],
+                'price' => ['required', 'numeric', 'min:0'],
                 'availability' => ['required', 'json'],
                 'description' => ['nullable', 'string', 'max:500'],
                 'category_id' => ['required', 'exists:category_services,id'],

@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use Carbon\Carbon;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -17,8 +16,8 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-         // Create a test user with your actual schema
-         User::create([
+        // Create a test user with your actual schema
+        User::create([
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'test@example.com',
@@ -31,6 +30,11 @@ class DatabaseSeeder extends Seeder
             'status' => 'active',
             'registration_date' => Carbon::now(),
             'email_verified_at' => Carbon::now(),
+        ]);
+
+        // Call the category services seeder
+        $this->call([
+            CategoryServiceSeeder::class,
         ]);
     }
 }

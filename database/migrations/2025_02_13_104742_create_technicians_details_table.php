@@ -14,7 +14,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->string('specialty', 100)->nullable();
-            $table->decimal('rate', 10, 2)->nullable();
+            $table->decimal('price', 10, 2)->nullable();
             $table->json('availability')->nullable(); 
             $table->text('description')->nullable();
             $table->unsignedBigInteger('category_id')->nullable(); 

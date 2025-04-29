@@ -32,8 +32,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
   //  Route::put('/profile/update/{id}', [UserController::class, 'update'])->name('profile.update');
 
 
-            Route::post('/send-message', [ChatController::class, 'sendMessage'])->name('send-message');
-            Route::get('/listsMessages/{id}', [ChatController::class, 'indexListMessage'])->name('listsMessages');
+         Route::post('/send-message', [ChatController::class, 'sendMessage'])->name('send-message');
+        Route::get('/listsMessages', [ChatController::class, 'indexListMessage'])->name('listsMessages');
         Route::get('/chat/{id}', [ChatController::class, 'indexMessage'])->name('chat');
 
 

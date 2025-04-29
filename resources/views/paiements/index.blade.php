@@ -19,14 +19,14 @@
                 @csrf             
                 <input type="hidden" name="payment_method" value="online">
                 <input type="hidden" name="status" value="confirm">
-                <input type="hidden" name="amount" value="{{ $technician->rate }}">
+                <input type="hidden" name="amount" value="{{ $technician->price }}">
                
 
                 <!-- Amount Display -->
                 <div class="bg-gray-50 p-4 rounded-lg">
                     <div class="flex justify-between items-center">
                         <span class="text-gray-600">Amount to pay:</span>
-                        <span class="text-lg font-bold text-gray-800">${{ $technician->rate }}</span>
+                        <span class="text-lg font-bold text-gray-800">${{ $technician->price }}</span>
                     </div>
                     <div class="mt-2 text-sm text-gray-500">
                         Client: {{ Auth::user()->first_name ?? 'N/A' }}

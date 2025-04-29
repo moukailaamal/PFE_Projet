@@ -141,7 +141,7 @@ class UserController extends Controller
         $technician = TechnicianDetail::findOrFail($id);
         $user = User::findOrFail($technician->user_id);
         
-        $services = Service::where('technician_id', $id)->get();
+        $services = Service::where('technician_id', $technician->user_id)->get();
         $avis = Avis::where('technician_id', $user->id)->get(); // Filtrer par user_id
     
         if ($technician->availability) {

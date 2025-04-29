@@ -6,6 +6,7 @@ use Exception;
 use App\Models\Message;
 use App\Events\MessageSent;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 class ChatController extends Controller
@@ -40,11 +41,11 @@ class ChatController extends Controller
                 return $message;
             });
         
-        return view('listMessages', ['conversations' => $conversations]);
+        return view('messages.listMessages', ['conversations' => $conversations]);
     }
     public function indexMessage($id) {
         $auth_id = Auth()->id();
-    
+        
         $messages = Message::where(function($query) use ($auth_id, $id) {
                 // Messages où l'utilisateur connecté est l'expéditeur et l'autre utilisateur est le destinataire
                 $query->where('sender_id', $auth_id)
@@ -55,10 +56,13 @@ class ChatController extends Controller
                 $query->where('sender_id', $id)
                       ->where('receiver_id', $auth_id);
             })
-            ->orderBy('send_date', 'desc')
+            ->orderBy('send_date', 'asc')
             ->get();
     
-        return view('chat', compact('messages'));
+        return view('messages.chat', [
+            'messages' => $messages,
+            'receiver_id' => $id  // Pass the receiver_id to the view
+        ]);
     }
     
     public function sendMessage(Request $request)
