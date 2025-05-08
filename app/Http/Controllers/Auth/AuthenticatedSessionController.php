@@ -26,22 +26,39 @@ class AuthenticatedSessionController extends Controller
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
-
+    
+        $user = Auth::user();
+    
         // Check if user has allowed role
-        if (!in_array(Auth::user()->role, ['technician', 'client'])) {
+        if (!in_array($user->role, ['technician', 'client'])) {
             Auth::guard('web')->logout();
             throw ValidationException::withMessages([
                 'email' => __('auth.unauthorized_role'),
             ]);
         }
-
+    
+        // Technician-specific checks
+        if ($user->role === 'technician') {
+            if ($user->status === 'pending') {
+                Auth::guard('web')->logout();
+                return redirect()->route('login')
+                    ->with('error', 'Your account is pending approval. Please wait for admin validation.');
+            }
+    
+            if ($user->status === 'rejected') {
+                Auth::guard('web')->logout();
+                return redirect()->route('login')
+                    ->with('error', 'Your certificate and identification do not meet platform requirements.');
+            }
+        }
+    
         // Role-based redirection
-        $redirectTo = match(Auth::user()->role) {
-            'technician' => route('home'),
-            'client' => route('home'),
-            default => route('home')
+        $redirectTo = match($user->role) {
+            'technician' => route('home'), 
+            'client'     => route('home'),
+            default      => route('home')
         };
-
+    
         return redirect()->intended($redirectTo);
     }
 

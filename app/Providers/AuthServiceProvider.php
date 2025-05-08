@@ -3,9 +3,10 @@
 namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
-use App\Policies\AdminPolicy;
-use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use App\Models\User;
+use App\Policies\AdminPolicy;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -25,6 +26,11 @@ class AuthServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->registerPolicies();
+        // Define gates for technician management
+        Gate::define('manageTechnicians', function (User $user) {
+            // Allow both admin and superAdmin to manage technicians
+            return in_array($user->role, ['admin', 'superAdmin']);
+        });
 
     }
 }

@@ -150,7 +150,7 @@
 
                                     <!-- View profile button -->
                                     <div class="mt-5 pt-4 border-t border-gray-200">
-                                        <a href="{{ route('technician.details', $technician->id) }}"
+                                        <a href="{{ route('technician.details', $technician->user) }}"
                                            class="w-full flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 transition">
                                             View Profile
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">

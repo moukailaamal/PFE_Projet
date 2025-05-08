@@ -10,13 +10,24 @@
       <div class="flex flex-wrap -mx-4">
   
         <div class="w-full md:w-1/2 lg:w-7/12 xl:w-2/3 px-4">
+          
           <div id="chat-body" class="mb-4" style="height: 500px; overflow-y: auto;">
+            <!-- Big centered person's profile -->
+          <div class="flex flex-col items-center justify-center mb-8 p-6 bg-white rounded-xl shadow-lg">
+            @php
+              $receiver = App\Models\User::find($receiver_id);
+            @endphp
+            <img src="{{ $receiver->photo ? asset('storage/' . $receiver->photo) : asset('images/default-avatar.png') }}" 
+                 alt="avatar" class="rounded-full w-24 h-24 mb-4 border-4 border-blue-100 shadow-md">
+            <h3 class="text-2xl font-bold text-gray-800">{{ $receiver->first_name }} {{ $receiver->last_name }}</h3>
+            <p class="text-gray-500 mt-1">{{ $receiver->role }}</p>
+          </div>
             <!-- Display previous messages here -->
             @foreach($messages as $message)
               @if($message->sender_id == auth()->id())
                 <!-- Message sent by current user -->
                 <div class="flex justify-end mb-4">
-                  <div class="card bg-white rounded-lg shadow w-full">
+                  <div class="card bg-white rounded-lg shadow w-fu"ll">
                     <div class="card-header flex justify-between p-3 border-b">
                       <p class="font-bold mb-0">{{ auth()->user()->first_name }}</p>
                       <p class="text-gray-500 text-sm mb-0"><i class="far fa-clock"></i> {{ $message->send_date->diffForHumans() }}</p>

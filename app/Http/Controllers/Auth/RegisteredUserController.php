@@ -58,7 +58,8 @@ class RegisteredUserController extends Controller
         }
     
         $validatedData = $request->validate($validationRules);
-    
+        $status = $request->role === 'technician' ? 'pending' : 'active';
+
         // Create the user (client or technician)
         $user = User::create([
             'first_name' => $validatedData['first_name'],
@@ -69,7 +70,7 @@ class RegisteredUserController extends Controller
             'gender' => $validatedData['gender'],
             'phone_number' => $validatedData['phone_number'],
             'address' => $validatedData['address'],
-            'status' => 'active',
+            'status' => $status,
             'registration_date' => Carbon::now(),
         ]);
     
@@ -106,6 +107,10 @@ class RegisteredUserController extends Controller
         }
     
         event(new Registered($user));
+         // Handle redirection based on user type
+    if ($request->role === 'technician') {
+        return redirect()->route('register.success');
+    }
         Auth::login($user);
         
         return redirect()->route('verification.notice');

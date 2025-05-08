@@ -1,17 +1,18 @@
 @extends('layouts.app')
 
-@section('title', 'List technician ')
+@section('title', 'List technician')
 
 @include('layouts.partials.navbar-dashboard')  
+
 @include('layouts.partials.sidebar') 
 @section('content')
-<div class="container mx-auto p-4 mt-16">
-    <h1 class="text-2xl font-bold mb-6">List technician  </h1>
 
-   
- 
+
+<div class="container mx-auto p-4 mt-16">
+    <h1 class="text-2xl font-bold mb-6">List technician</h1>
+
     @if($technicians->isEmpty())
-        <p class="text-gray-500">no technician </p>
+        <p class="text-gray-500">No technician found</p>
     @else
         <div class="bg-white shadow-lg rounded-lg overflow-hidden">
             <table class="min-w-full">
@@ -37,50 +38,60 @@
                                 {{ $technician->phone_number }}
                             </td>
                             
-                                                <!-- Certificate -->
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            @if($technician->technician?->certificat_path)
-                                <a href="{{ asset('storage/' . $technician->technician->certificat_path) }}" target="_blank" class="text-blue-600 underline">
-                                    Voir certificat
-                                </a>
-                            @else
-                                <span class="text-gray-500">Aucun</span>
-                            @endif
-                        </td>
+                            <!-- Certificate -->
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                @if($technician->technician?->certificat_path)
+                                    <a href="{{ asset('storage/' . $technician->technician->certificat_path) }}" target="_blank" class="text-blue-600 underline">
+                                        View certificate
+                                    </a>
+                                @else
+                                    <span class="text-gray-500">None</span>
+                                @endif
+                            </td>
 
-                        <!-- Identity -->
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            @if($technician->technician?->identite_path)
-                                <a href="{{ asset('storage/' . $technician->technician->identite_path) }}" target="_blank" class="text-blue-600 underline">
-                                    Voir identité
-                                </a>
-                            @else
-                                <span class="text-gray-500">Aucun</span>
-                            @endif
-                        </td>
+                            <!-- Identity -->
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                @if($technician->technician?->identite_path)
+                                    <a href="{{ asset('storage/' . $technician->technician->identite_path) }}" target="_blank" class="text-blue-600 underline">
+                                        View ID
+                                    </a>
+                                @else
+                                    <span class="text-gray-500">None</span>
+                                @endif
+                            </td>
 
                             <!-- Status -->
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2 py-1 text-sm font-semibold rounded-full {{ $technician->status === 'active' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
-                                    {{ ucfirst($technician->status ?? 'inactive') }}
+                                @php
+                                    $statusClasses = [
+                                        'active' => 'bg-green-100 text-green-800',
+                                        'rejected' => 'bg-red-100 text-red-800',
+                                        'pending' => 'bg-yellow-100 text-yellow-800'
+                                    ];
+                                    $statusClass = $statusClasses[$technician->status] ?? 'bg-gray-100 text-gray-800';
+                                @endphp
+                                <span class="px-2 py-1 text-sm font-semibold rounded-full {{ $statusClass }}">
+                                    {{ ucfirst($technician->status) }}
                                 </span>
                             </td>
             
                             <!-- Actions -->
                             <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                @if($technician->status !== 'active')
-                                <form action="{{ route('technician.activateStatus', $technician->id) }}" method="POST" class="inline">
+                                <form action="{{ route('technician.updateStatus', $technician->id) }}" method="POST" class="inline">
                                     @csrf
                                     @method('PUT')
-                                    <button type="submit" class="text-green-500 hover:text-green-700" onclick="return confirm('Are you sure you want to activate this technician?')">Activate</button>
+                                    @if($technician->status !== 'active')
+                                        <input type="hidden" name="action" value="activate">
+                                        <button type="submit" class="text-green-500 hover:text-green-700" onclick="return confirm('Are you sure you want to activate this technician?')">
+                                            Activate
+                                        </button>
+                                    @else
+                                        <input type="hidden" name="action" value="reject">
+                                        <button type="submit" class="text-red-500 hover:text-red-700" onclick="return confirm('Are you sure you want to reject this technician?')">
+                                            Reject
+                                        </button>
+                                    @endif
                                 </form>
-                                @else
-                                <form action="{{ route('technician.inactivateStatus', $technician->id) }}" method="POST" class="inline">
-                                    @csrf
-                                    @method('PUT')
-                                    <button type="submit" class="text-red-500 hover:text-red-700" onclick="return confirm('Are you sure you want to deactivate this technician?')">Deactivate</button>
-                                </form>
-                                @endif
                             </td>
                         </tr>
                     @endforeach
@@ -89,10 +100,4 @@
         </div>
     @endif
 </div>
-<!-- Confirmation Script -->
-<script>
-    function confirmAction(message) {
-        return confirm(message);
-    }
-    </script>
 @endsection

@@ -3,7 +3,6 @@
 @section('title', 'Book hour now')
 
 @include('layouts.partials.navbar-dashboard')  
-@include('layouts.partials.sidebar') 
 @section('content')
 <div class="container mx-auto p-4 mt-16">
     <h1 class="text-2xl font-bold mb-4 text-center">Select an Available Hour</h1>
@@ -45,8 +44,9 @@
 <!-- Formulaire caché pour la réservation -->
 <form id="booking-form" action="{{ route('book.store') }}" method="POST" class="hidden">
     @csrf
-    <input type="hidden" name="technician_id" value="{{ $technician->id }}">
-    <input type="hidden" name="appointment_date" id="appointment-date">
+
+    <input type="hidden" name="technician_id" value="{{ $technician->user_id }}" id="technician_id">
+        <input type="hidden" name="appointment_date" id="appointment-date">
     <input type="hidden" name="appointment_time" id="appointment-time">
     <input type="hidden" name="address" id="address">
     <input type="hidden" name="notes" id="notes">

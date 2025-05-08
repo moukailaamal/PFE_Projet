@@ -21,8 +21,13 @@ class HomeController extends Controller
         // Charger les catégories et services pour le formulaire
         $categories = CategoryService::all(); 
     
-        // Construire la requête pour les techniciens
-        $query = TechnicianDetail::with('user');
+        // Construire la requête pour les techniciens avec jointure sur la table users
+        $query = TechnicianDetail::with(['user' => function($q) {
+            $q->where('status', 'active'); // Only include active users
+        }])
+        ->whereHas('user', function($q) {
+            $q->where('status', 'active'); // Ensure the user is active
+        });
     
         // Appliquer les filtres
         if ($search) {
@@ -59,13 +64,11 @@ class HomeController extends Controller
             }
         }
         
-       
-    
         // Récupérer les techniciens filtrés et les grouper par spécialité
         $technicians = $query->get();
         $groupedTechnicians = $technicians->groupBy('specialty');
     
         // Retourner la vue avec les données
-        return view('home', compact('groupedTechnicians', 'categories',  'search', 'categoryId', 'availability', 'location', 'priceRange'));
+        return view('home', compact('groupedTechnicians', 'categories', 'search', 'categoryId', 'availability', 'location', 'priceRange'));
     }
 }

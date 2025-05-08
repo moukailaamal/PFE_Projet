@@ -13,7 +13,7 @@
                     </svg>
                 </div>
                 <h2 class="text-2xl font-bold text-gray-800">Secure Payment</h2>
-                <p class="mt-2 text-sm text-gray-600">Complete your payment for {{ $technician->first_name  }}</p>
+                <p class="mt-2 text-sm text-gray-600">Complete your payment for </p>
             </div>
             <form action="{{ route('payments.store',$reservation) }}" method="POST" class="space-y-6">
                 @csrf             

@@ -22,7 +22,7 @@ return new class extends Migration
             $table->enum('gender', ['male', 'female', 'other']); 
             $table->string('address', 255)->nullable(); 
             $table->string('phone_number', 15)->nullable(); 
-            $table->enum('status', ['active', 'inactive', 'pending'])->nullable(); // Added 'pending' status
+            $table->enum('status', ['active', 'rejected', 'pending'])->nullable();
             $table->dateTime('registration_date');
             
             // Email verification

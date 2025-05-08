@@ -26,7 +26,7 @@
 
     <form id="technician-form" method="POST" action="{{ route('profile.update', $user->id) }}" class="mt-6 space-y-6" enctype="multipart/form-data">
         @csrf
-        @method('PUT')
+        @method('PATCH')
 
         <!-- Logo et Titre -->
         <div class="flex justify-center mb-6">
@@ -249,11 +249,11 @@
             </div>
         @endif
 
-        <!-- Boutons -->
-        <div class="flex justify-between pt-6">
-            <button type="reset" class="w-1/2 bg-gray-400 text-white p-2 rounded-lg hover:bg-gray-500 mr-2">Cancel</button>
-            <button type="submit" class="w-1/2 bg-indigo-600 text-white p-2 rounded-lg hover:bg-indigo-700 ml-2">Update Profile</button>
-        </div>
+       <!-- Boutons -->
+<div class="flex justify-between pt-6">
+    <button type="reset" class="w-1/2 bg-gray-400 text-white p-2 rounded-lg hover:bg-gray-500 mr-2">Cancel</button>
+    <button type="submit" class="w-1/2 bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 ml-2">Update Profile</button>
+</div>
     </form>
 
     <script>

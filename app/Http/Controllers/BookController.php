@@ -24,7 +24,9 @@ class BookController extends Controller
      */
     public function showBookingDaysForm($id)
     {
-        $technician = TechnicianDetail::findOrFail($id);
+        $user = User::findOrFail($id);
+        $technician = TechnicianDetail::where('user_id',$user->id)->first();
+       
 
         // Récupérer les jours disponibles du technicien
         $availability = json_decode($technician->availability, true);
@@ -38,51 +40,52 @@ class BookController extends Controller
      */
     public function showBookingHoursForm($id, $day)
     {
-        $technician = TechnicianDetail::findOrFail($id);
-    
-        // Convertir la date en jour de la semaine (ex: "Tuesday")
+        $user = User::findOrFail($id);
+        $technician = TechnicianDetail::where('user_id',$user->id)->first();
         $dayOfWeek = date('l', strtotime($day));
-    
-        // Récupérer les heures disponibles pour le jour sélectionné
         $availability = json_decode($technician->availability, true);
         $availableHours = [];
     
-        // Parcourir le tableau pour trouver les disponibilités du jour
         foreach ($availability as $slot) {
             if ($slot['day'] === $dayOfWeek) {
-                // Extraire les heures disponibles entre start_time et end_time
                 $startTime = strtotime($slot['start_time']);
                 $endTime = strtotime($slot['end_time']);
-    
-                // Générer des créneaux horaires de 1 heure
-                for ($time = $startTime; $time < $endTime; $time += 3600) {
-                    $availableHours[] = date('H:i', $time);
+                
+                // Handle overnight slots (end time is next day)
+                if ($endTime <= $startTime) {
+                    $endTime += 86400; // Add 24 hours if end time is next day
                 }
-                break; // Sortir de la boucle une fois le jour trouvé
+    
+                // Generate hourly slots
+                for ($time = $startTime; $time < $endTime; $time += 3600) {
+                    $formattedTime = date('H:i', $time);
+                    
+                    // For times that are actually next day, we need to check if they're valid
+                    if ($time >= $startTime && ($time - $startTime) < 86400) {
+                        $availableHours[] = $formattedTime;
+                    }
+                }
+                break;
             }
         }
     
-        // Vérifier si la date est dans le futur
-        $today = now()->startOfDay(); // Date d'aujourd'hui à minuit
-        $selectedDate = \Carbon\Carbon::parse($day)->startOfDay(); // Date sélectionnée à minuit
+        // Check if date is in the past
+        $today = now()->startOfDay();
+        $selectedDate = \Carbon\Carbon::parse($day)->startOfDay();
     
         if ($selectedDate->lt($today)) {
-            // Si la date est dans le passé, vider les heures disponibles
             $availableHours = [];
         }
     
-        // Récupérer les réservations existantes pour ce technicien à la date sélectionnée
+        // Get existing reservations
         $existingReservations = Reservation::where('technician_id', $technician->id)
-            ->whereDate('appointment_date', $selectedDate)
-            ->pluck('appointment_date')
-            ->toArray();
-    
-        // Convertir les réservations existantes en heures (format 'H:i')
+        ->whereDate('appointment_date', $selectedDate)
+        ->pluck('appointment_date')
+        ->toArray();
         $reservedHours = array_map(function ($datetime) {
             return \Carbon\Carbon::parse($datetime)->format('H:i');
         }, $existingReservations);
     
-        // Retourner la vue avec les données
         return view('book.select_hours', compact('technician', 'availableHours', 'day', 'reservedHours'));
     }
     /**
@@ -102,20 +105,24 @@ class BookController extends Controller
      
          // Combiner la date et l'heure pour créer un objet DateTime
          $appointmentDateTime = $validatedData['appointment_date'] . ' ' . $validatedData['appointment_time'];
-     
+         
+         $user = User::findOrFail($validatedData['technician_id']);
+         $technician = TechnicianDetail::where('user_id',$user->id)->first();
+        
          try {
             
              // Créer la réservation
              $reservation = Reservation::create([
                  'client_id' => auth()->id(), // ID de l'utilisateur connecté
-                 'technician_id' => $validatedData['technician_id'],
+                 'technician_id' => $user->id,
                  'appointment_date' => $appointmentDateTime, // Date et heure combinées
                  'address' => $validatedData['address'],
                  'notes' => $validatedData['notes'],
                  'status' => 'pending', // Statut par défaut
                  'creation_date' => now(), // Date de création
              ]);
-     
+            
+
              // Rediriger avec un message de succès
              return redirect()->route('payments.PaymentMethod', $reservation->id)
                               ->with('success', 'Réservation créée avec succès.');

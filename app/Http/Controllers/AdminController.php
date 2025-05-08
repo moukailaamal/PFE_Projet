@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Http\Request;
+
 use App\Models\Reservation;
 use Illuminate\Support\Facades\Gate;
 
@@ -35,6 +37,7 @@ class AdminController extends Controller
     }
     public function listTechnician() 
     {
+        
         $technicians = User::where('role', 'technician')->with('technician')->paginate(10);
         return view('admin.listTechnician', compact('technicians'));
     }
@@ -47,30 +50,33 @@ class AdminController extends Controller
     
         return view('admin.listsAllAppointments', compact('users', 'reservations'));
     }
-    public function activeTechnicianStatus($id)
-    {
-        $technician = User::findOrFail($id);
+ 
     
-        if ($technician->status !== 'active') {
-            $technician->update(['status' => 'active']);
-            return redirect()->back()->with('success', 'Technician status activated successfully.');
-        }
     
-        return redirect()->back()->with('error', 'Technician is already active.');
-    }
-    
-    public function inactiveTechnicianStatus($id)
-    {
-        $technician = User::findOrFail($id);
-    
-        if ($technician->status === 'active') {
-            $technician->update(['status' => 'inactive']);
-            return redirect()->back()->with('success', 'Technician status deactivated successfully.');
-        }
-    
-        return redirect()->back()->with('error', 'Only active technicians can be deactivated.');
-    }
 
-   
+    public function updateTechnicianStatus(Request $request, $id)
+    {
+        try {
+            $technician = User::findOrFail($id);
+            $action = $request->action;
+            
+            if ($action == "activate") {
+                $technician->update(['status' => 'active']); 
+            } elseif ($action == "reject") {  
+                $technician->update(['status' => 'rejected']);
+            } else {
+                return redirect()->route('technician.list')
+                    ->with('error', 'Invalid action requested.');
+            }
+            
+            return redirect()->route('technician.list')
+                ->with('success', 'Technician status updated successfully.');
+    
+        } catch (\Exception $e) {
+            return redirect()->route('technician.list')
+                ->with('error', 'An error occurred: ' . $e->getMessage());
+        }
+    }
+    
     
 }

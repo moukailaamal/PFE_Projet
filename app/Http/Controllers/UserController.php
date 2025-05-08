@@ -138,8 +138,9 @@ class UserController extends Controller
         return redirect()->route('profile.form')->with('success', 'Profil mis à jour avec succès.');
     }
     public function InformationTechnician($id) {
-        $technician = TechnicianDetail::findOrFail($id);
-        $user = User::findOrFail($technician->user_id);
+       
+        $user = User::findOrFail($id);
+        $technician = TechnicianDetail::where('user_id',$user->id)->first();
         
         $services = Service::where('technician_id', $technician->user_id)->get();
         $avis = Avis::where('technician_id', $user->id)->get(); // Filtrer par user_id
@@ -185,7 +186,7 @@ public function storeAvis(Request $request)
         ]);
 
         return redirect()
-            ->route('technician.details', ['id' => $technicianDetail->id])
+            ->route('technician.details', ['id' => $technicianUser->id])
             ->with('success', 'Avis soumis avec succès!');
 
     } catch (\Exception $e) {

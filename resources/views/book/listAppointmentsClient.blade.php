@@ -22,7 +22,7 @@
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date & Time</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Appointment date</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
@@ -77,7 +77,7 @@
                                         </form>
                                     @elseif($reservation->status === 'confirmed')
                                         <!-- Mark as Completed Form -->
-                                        <form action="{{ route('book.complete', $reservation->id) }}" method="POST" class="inline" onsubmit="return confirmAction('Are you sure you want to mark this reservation as completed?');">
+                                        <form action="{{ route('book.completed', $reservation->id) }}" method="POST" class="inline" onsubmit="return confirmAction('Are you sure you want to mark this reservation as completed?');">
                                             @csrf
                                             @method('PUT')
                                             <button type="submit" class="text-green-500 hover:text-green-700 ml-3">Mark as Completed</button>

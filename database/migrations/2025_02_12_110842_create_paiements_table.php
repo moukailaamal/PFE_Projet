@@ -13,14 +13,13 @@ return new class extends Migration
     {
         Schema::create('paiements', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('reservation_id')->constrained('reservations')->nullable();
-            $table->foreignId('client_id')->constrained('users'); // Supposant que clients sont dans la table users
-            $table->foreignId('technician_id')->constrained('users'); // Supposant que techniciens sont aussi dans users
+            $table->foreignId('reservation_id')->constrained('reservations')->onDelete('cascade')->nullable();
+            $table->foreignId('client_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('technician_id')->constrained('users')->onDelete('cascade');
             $table->decimal('amount', 8, 2);
             $table->enum('payment_method', ['online', 'cash']);
             $table->enum('status', ['paid', 'pending', 'refunded', 'failed']);
-            $table->dateTime('payment_date')->nullable(); 
-
+            $table->dateTime('payment_date')->nullable();
             $table->timestamps();
         });
     }

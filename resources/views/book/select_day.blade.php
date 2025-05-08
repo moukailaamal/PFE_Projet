@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (isAvailable) {
                 // Rediriger vers la page de sélection des heures
-                const url = '{{ route("book.hours", ["id" => $technician->id, "day" => "DAY_PLACEHOLDER"]) }}'
+                const url = '{{ route("book.hours", ["id" => $technician->user, "day" => "DAY_PLACEHOLDER"]) }}'
                     .replace('DAY_PLACEHOLDER', info.dateStr); // Remplacer le placeholder par la date
                 window.location.href = url;
             } else {
