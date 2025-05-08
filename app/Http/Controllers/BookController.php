@@ -34,61 +34,7 @@ class BookController extends Controller
         // Retourner la vue avec les données
         return view('book.select_day', compact('technician', 'availability'));
     }
-
-    /**
-     * Affiche les heures disponibles pour un jour spécifique.
-     */
-    public function showBookingHoursForm($id, $day)
-    {
-        $user = User::findOrFail($id);
-        $technician = TechnicianDetail::where('user_id',$user->id)->first();
-        $dayOfWeek = date('l', strtotime($day));
-        $availability = json_decode($technician->availability, true);
-        $availableHours = [];
-    
-        foreach ($availability as $slot) {
-            if ($slot['day'] === $dayOfWeek) {
-                $startTime = strtotime($slot['start_time']);
-                $endTime = strtotime($slot['end_time']);
-                
-                // Handle overnight slots (end time is next day)
-                if ($endTime <= $startTime) {
-                    $endTime += 86400; // Add 24 hours if end time is next day
-                }
-    
-                // Generate hourly slots
-                for ($time = $startTime; $time < $endTime; $time += 3600) {
-                    $formattedTime = date('H:i', $time);
-                    
-                    // For times that are actually next day, we need to check if they're valid
-                    if ($time >= $startTime && ($time - $startTime) < 86400) {
-                        $availableHours[] = $formattedTime;
-                    }
-                }
-                break;
-            }
-        }
-    
-        // Check if date is in the past
-        $today = now()->startOfDay();
-        $selectedDate = \Carbon\Carbon::parse($day)->startOfDay();
-    
-        if ($selectedDate->lt($today)) {
-            $availableHours = [];
-        }
-    
-        // Get existing reservations
-        $existingReservations = Reservation::where('technician_id', $technician->id)
-        ->whereDate('appointment_date', $selectedDate)
-        ->pluck('appointment_date')
-        ->toArray();
-        $reservedHours = array_map(function ($datetime) {
-            return \Carbon\Carbon::parse($datetime)->format('H:i');
-        }, $existingReservations);
-    
-        return view('book.select_hours', compact('technician', 'availableHours', 'day', 'reservedHours'));
-    }
-    /**
+  /**
      * Stocke une nouvelle réservation.
      */
 
@@ -134,108 +80,62 @@ class BookController extends Controller
          }
      }
 
-
-
-
     /**
-     * Calcule les créneaux disponibles pour un technicien.
+     * Affiche les heures disponibles pour un jour spécifique.
      */
-
-    private function calculateAvailableSlots($technician, $reservations, $targetDate)
+    public function showBookingHoursForm($id, $day)
     {
-        $availableSlots = [];
-    
-        // Convertir la chaîne JSON en tableau
+        $user = User::findOrFail($id);
+        $technician = TechnicianDetail::where('user_id',$user->id)->first();
+        $dayOfWeek = date('l', strtotime($day));
         $availability = json_decode($technician->availability, true);
+        $availableHours = [];
     
-        // Vérifier si la conversion a réussi
-        if (!is_array($availability)) {
-            throw new \Exception("La disponibilité du technicien n'est pas au format JSON valide.");
-        }
-    
-        // Convertir la date cible en objet Carbon pour la comparaison
-        $targetDate = Carbon::parse($targetDate)->startOfDay();
-    
-        // Parcourir les disponibilités du technicien
         foreach ($availability as $slot) {
-            $day = Carbon::parse($slot['day'])->startOfDay();
-    
-            // Vérifier si la disponibilité correspond à la date cible
-            if (!$day->eq($targetDate)) {
-                continue; // Passer à la prochaine disponibilité si la date ne correspond pas
-            }
-    
-            $startTime = Carbon::parse($slot['start_time']);
-            $endTime = Carbon::parse($slot['end_time']);
-    
-            // Combiner la date et l'heure de début
-            $startDateTime = $day->copy()->setTime($startTime->hour, $startTime->minute, $startTime->second);
-            $endDateTime = $day->copy()->setTime($endTime->hour, $endTime->minute, $endTime->second);
-    
-            // Générer des créneaux de 1 heure
-            while ($startDateTime->lt($endDateTime)) {
-                $slotEnd = $startDateTime->copy()->addMinutes(60);
-    
-                // Vérifier si le créneau est déjà réservé
-                $isBooked = $reservations->contains(function ($reservation) use ($startDateTime, $slotEnd) {
-                    $reservationDateTime = Carbon::parse($reservation->appointment_date);
-                    return $reservationDateTime->between($startDateTime, $slotEnd);
-                });
-    
-                // Ajouter le créneau s'il est disponible
-                if (!$isBooked) {
-                    $availableSlots[] = [
-                        'start' => $startDateTime->format('Y-m-d H:i:s'),
-                        'end' => $slotEnd->format('Y-m-d H:i:s'),
-                    ];
+            if ($slot['day'] === $dayOfWeek) {
+                $startTime = strtotime($slot['start_time']);
+                $endTime = strtotime($slot['end_time']);
+                
+                // Handle overnight slots (end time is next day)
+                if ($endTime <= $startTime) {
+                    $endTime += 86400; // Add 24 hours if end time is next day
                 }
     
-                // Passer au créneau suivant
-                $startDateTime->addMinutes(60);
+                // Generate hourly slots
+                for ($time = $startTime; $time < $endTime; $time += 3600) {
+                    $formattedTime = date('H:i', $time);
+                    
+                    // For times that are actually next day, we need to check if they're valid
+                    if ($time >= $startTime && ($time - $startTime) < 86400) {
+                        $availableHours[] = $formattedTime;
+                    }
+                }
+                break;
             }
         }
     
-        return $availableSlots;
-    }
-
-    /**
-     * Vérifie si un créneau est disponible pour un technicien.
-     */
-    private function isSlotAvailable($technicianId, $appointmentDate)
-    {
-        // Récupérer les réservations non annulées
-        $reservations = Reservation::where('technician_id', $technicianId)
-                                   ->where('status', '!=', 'canceled')
-                                   ->get();
-
-        // Vérifier si le créneau est déjà réservé
-        foreach ($reservations as $reservation) {
-            if (Carbon::parse($reservation->appointment_date)->eq(Carbon::parse($appointmentDate))) {
-                return false;
-            }
+        // Check if date is in the past
+        $today = now()->startOfDay();
+        $selectedDate = \Carbon\Carbon::parse($day)->startOfDay();
+    
+        if ($selectedDate->lt($today)) {
+            $availableHours = [];
         }
-
-        return true;
+    
+        // Get existing reservations for this day
+        $existingReservations = Reservation::where('technician_id', $technician->user_id)
+            ->whereDate('appointment_date', $selectedDate)
+            ->get();
+    
+        $reservedHours = [];
+        foreach ($existingReservations as $reservation) {
+            $reservationTime = \Carbon\Carbon::parse($reservation->appointment_date);
+            $reservedHours[] = $reservationTime->format('H:i');
+        }
+    
+        return view('book.select_hours', compact('technician', 'availableHours', 'day', 'reservedHours'));
     }
-
-    /**
-     * Récupère les créneaux disponibles pour une date spécifique.
-     */
-    public function getAvailableSlots($id, $date)
-    {
-        // Récupérer le technicien
-        $technician = TechnicianDetail::findOrFail($id);
-
-        // Récupérer les réservations non annulées
-        $reservations = Reservation::where('technician_id', $id)
-                                   ->where('status', '!=', 'canceled')
-                                   ->get();
-
-        // Calculer les créneaux disponibles
-        $availableSlots = $this->calculateAvailableSlots($technician, $reservations, $date);
-
-        return response()->json($availableSlots);
-    }
+  
     public function listAppointmentsTech($id)
     {
         $technician = TechnicianDetail::with('user')->where('user_id', $id)->first();

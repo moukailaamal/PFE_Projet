@@ -18,14 +18,15 @@
                 @php
                     $isReserved = in_array($hour, $reservedHours);
                 @endphp
-                <div class="border border-gray-200 rounded-lg shadow-sm transition-shadow duration-200 cursor-pointer {{ $isReserved ? 'bg-gray-200 cursor-not-allowed' : 'bg-white hover:shadow-md' }}"
+                <div class="border border-gray-200 rounded-lg shadow-sm transition-all duration-200 
+                            {{ $isReserved ? 'bg-gray-100 cursor-not-allowed' : 'bg-white hover:shadow-md cursor-pointer' }}"
                      @if(!$isReserved) onclick="selectHour('{{ $day }}', '{{ $hour }}')" @endif>
                     <div class="p-4 text-center">
-                        <p class="text-lg font-medium {{ $isReserved ? 'text-gray-500' : 'text-blue-600' }}">
+                        <p class="text-lg font-medium {{ $isReserved ? 'text-gray-400' : 'text-blue-600' }}">
                             {{ $hour }} - {{ date('H:i', strtotime($hour) + 3600) }}
                         </p>
-                        <p class="text-sm text-gray-500 mt-1">
-                            {{ $isReserved ? 'Reserved' : 'Click to book' }}
+                        <p class="text-sm {{ $isReserved ? 'text-gray-400' : 'text-gray-500' }} mt-1">
+                            {{ $isReserved ? 'Already Reserved' : 'Available' }}
                         </p>
                     </div>
                 </div>
