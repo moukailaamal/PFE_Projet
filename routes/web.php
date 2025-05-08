@@ -132,8 +132,8 @@ Route::prefix('admin')->middleware([
     }); 
 });
     
-    // User deletion (protected by policy)
-    Route::delete('/users/{user}', [AdminController::class, 'destroy'])
+
+Route::delete('/users/{user}', [AdminController::class, 'destroy'])
         ->name('admin.users.destroy')
         ->middleware('can:delete,user');
 });

@@ -11,6 +11,12 @@
             {{ __('Profile') }}
         </h2>
     </x-slot>
+    <!-- Message de session -->
+    @if (session('status'))
+    <div class="text-green-600 text-sm font-medium">
+        {{ session('status') }}
+    </div>
+@endif
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">

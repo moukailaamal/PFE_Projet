@@ -117,7 +117,7 @@ class ProfileController extends Controller
                 // Mise à jour des informations du technicien
                 $technician->update([
                     'specialty' => $request->input('specialty'),
-                    'rate' => $request->input('rate'),
+                    'price' => $request->input('price'),
                     'availability' => $request->input('availability'), // Utilisation du JSON
                     'description' => $request->input('description'),
                     'category_id' => $request->input('category_id'),
