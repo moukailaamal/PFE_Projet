@@ -30,7 +30,7 @@
                   <div class="card bg-white rounded-lg shadow w-fu"ll">
                     <div class="card-header flex justify-between p-3 border-b">
                       <p class="font-bold mb-0">{{ auth()->user()->first_name }}</p>
-                      <p class="text-gray-500 text-sm mb-0"><i class="far fa-clock"></i> {{ $message->send_date->diffForHumans() }}</p>
+                      <p class="text-gray-500 text-sm mb-0"><i class="far fa-clock"></i> {{ $message->send_date->format('M j, Y g:i A') }}</p>
                     </div>
                     <div class="card-body p-3">
                       <p class="mb-0">{{ $message->message }}</p>
@@ -47,7 +47,7 @@
                   <div class="card bg-white rounded-lg shadow flex-1">
                     <div class="card-header flex justify-between p-3 border-b">
                       <p class="font-bold mb-0">{{ $message->sender->first_name }}</p>
-                      <p class="text-gray-500 text-sm mb-0"><i class="far fa-clock"></i> {{ $message->send_date->diffForHumans() }}</p>
+                      <p class="text-gray-500 text-sm mb-0"><i class="far fa-clock"></i> {{ $message->send_date->format('M j, Y g:i A') }}</p>
                     </div>
                     <div class="card-body p-3">
                       <p class="mb-0">{{ $message->message }}</p>

@@ -71,7 +71,7 @@
                         </div>
                         <div class="ml-3">
                             <p class="text-sm text-yellow-700">
-                                Please note that approval may take up to 24-48 hours. You'll receive an email notification once your account is activated.
+                                Please note that approval may take up to 24-48 hours. 
                             </p>
                         </div>
                     </div>

@@ -36,7 +36,8 @@
                     </div>
                     <div class="pt-1">
                       <p class="text-sm text-gray-500 mb-1">
-                        {{ $conversation->send_date->diffForHumans() }}
+                       
+                        {{ $conversation->send_date->format('M j, Y g:i A') }}
                       </p>
                       @if($conversation->unread_count ?? false)
                         <span class="bg-red-500 text-white text-xs rounded-full px-2 py-1 float-right">
