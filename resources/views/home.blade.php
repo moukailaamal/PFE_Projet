@@ -2,9 +2,12 @@
 
 @section('title', 'Home')
 
-@include('layouts.partials.navbar-dashboard')  
+@include('layouts.partials.navbar-dashboard')
+
 @auth 
-@include('layouts.partials.sidebar') 
+    @section('sidebar')
+        @include('layouts.partials.sidebar')
+    @endsection
 @endauth
 @section('content')
 <div class="container mx-auto px-4 py-8 mt-16">

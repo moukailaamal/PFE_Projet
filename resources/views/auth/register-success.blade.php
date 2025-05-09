@@ -1,6 +1,8 @@
 @extends('layouts.app')
 @include('layouts.partials.navbar-dashboard')  
-@include('layouts.partials.sidebar')
+@section('sidebar')
+        @include('layouts.partials.sidebar')
+ @endsection
 
 @section('content')
 <div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">

@@ -2,7 +2,11 @@
 
 @section('title', 'Chat')
 @include('layouts.partials.navbar-dashboard')  
-@include('layouts.partials.sidebar') 
+
+@section('sidebar')
+        @include('layouts.partials.sidebar')
+@endsection
+    
 @section('content')
 <section class="py-5">
     <div class="container mx-auto px-4 py-5 mt-16">

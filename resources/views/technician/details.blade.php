@@ -5,7 +5,106 @@
 @include('layouts.partials.navbar-dashboard')  
 @section('content')
 <div class="w-full grid grid-cols-1 xl:grid-cols-4 gap-4 mt-16">
-    <!-- Main Section (Technician Details) -->
+    <!-- Comments and Reviews Section - Now on the left side -->
+    <div class="xl:col-span-1 order-first">
+        <div class="bg-white shadow-xl rounded-lg p-6">
+            <p class="text-lg font-semibold text-gray-700">Comments and Reviews</p>
+            <div class="mt-4 space-y-4">
+                @foreach ($avis as $av)
+                <div class="flex items-start group relative" data-avis-id="{{ $av->id }}">
+                    <div class="flex-shrink-0">
+                        <img class="h-10 w-10 rounded-full shadow-md" src="{{ asset('storage/' . $av->client->photo) }}" alt="User Avatar">
+                    </div>
+                    <div class="ml-4 flex-1">
+                        <!-- Display mode -->
+                        <div id="display-mode-{{ $av->id }}">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">{{ $av->client->first_name }} {{ $av->client->last_name }}</p>
+                                    <p class="text-sm text-gray-500" id="comment-text-{{ $av->id }}">{{ $av->comment }}</p>
+                                    <div class="flex items-center mt-1">
+                                        <span class="text-yellow-500" id="rating-display-{{ $av->id }}">
+                                            @for($i = 1; $i <= 5; $i++)
+                                                @if($i <= $av->rating) ★ @else ☆ @endif
+                                            @endfor
+                                        </span>
+                                        <span class="ml-2 text-sm text-gray-700">{{ $av->rating }}/5</span>
+                                    </div>
+                                </div>
+                                <div class="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    @if(auth()->check() && auth()->user()->id == $av->client_id)
+                                        <button onclick="enableEdit({{ $av->id }})" 
+                                            class="text-blue-600 hover:text-blue-800 text-sm p-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                            </svg>
+                                        </button>
+                                    @endif
+                                    
+                                    @if(auth()->check() && (auth()->user()->id == $av->client_id || auth()->user()->id == $av->technician_id))
+                                        <form method="POST" action="{{ route('delete.review', $av->id) }}" class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" onclick="return confirm('Are you sure you want to delete this review?')" class="text-red-600 hover:text-red-800 text-sm p-1">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @endif
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1">{{ $av->review_date->format('d M Y H:i') }}</p>
+                        </div>
+
+                        <!-- Edit mode (hidden by default) -->
+                        <div id="edit-mode-{{ $av->id }}" class="hidden">
+                            <form method="POST" action="{{ route('update.review', $av->id) }}" class="space-y-3">
+                                @csrf
+                                @method('PUT')
+                                <textarea id="edit-comment-{{ $av->id }}" 
+                                        name="comment"
+                                        class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none focus:shadow-outline"
+                                        rows="3">{{ $av->comment }}</textarea>
+                                
+                                <div class="flex items-center">
+                                    <span class="mr-2 text-gray-700">Rating:</span>
+                                    <div class="rating-stars flex">
+                                        @for($i = 1; $i <= 5; $i++)
+                                            <span class="star text-2xl cursor-pointer" 
+                                                data-rating="{{ $i }}" 
+                                                data-avis-id="{{ $av->id }}"
+                                                onmouseover="highlightStars(this, {{ $av->id }})"
+                                                onmouseout="resetStars({{ $av->id }})"
+                                                onclick="setRating({{ $i }}, {{ $av->id }})">
+                                                {{ $i <= $av->rating ? '★' : '☆' }}
+                                            </span>
+                                        @endfor
+                                        <input type="hidden" name="rating" id="rating-input-{{ $av->id }}" value="{{ $av->rating }}">
+                                    </div>
+                                </div>
+                                
+                                <div class="flex justify-end space-x-2 mt-2">
+                                    <button type="button" 
+                                            onclick="cancelEdit({{ $av->id }})" 
+                                            class="px-3 py-1 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">
+                                        Cancel
+                                    </button>
+                                    <button type="submit" 
+                                            class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">
+                                        Update
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Section (Technician Details) - Takes 3 columns on xl screens -->
     <div class="xl:col-span-3">
         <div class="flex flex-col md:flex-row items-center justify-between mb-4">
             <div class="flex-shrink-0 text-center md:text-left">
@@ -62,44 +161,43 @@
                             @endforeach
                         </div>
                     </div>
-                    <div class="mt-4 space-y-2">
+                    <div class="mt-6 space-y-4">
                         @auth
-                        <div class="bg-gray-50 p-4 rounded-lg mb-6">
-                            
-                        <a href="{{ route('book.days', $user->id) }}">
-                            <button type="button" class="flex-1 flex items-center justify-center space-x-2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-3 px-4 rounded-lg transition-colors">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                                </svg>
-                                <span>Book now</span>
-                            </button>
-                        </a>
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <a href="{{ route('book.days', $user->id) }}" class="flex-1">
+                                <button type="button" class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 font-medium rounded-lg text-base px-5 py-3 w-full text-center flex items-center justify-center space-x-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                    <span>Book now</span>
+                                </button>
+                            </a>
                            
-                       
-                        <a href="{{ route('chat', $technician->user->id) }}">
-                            <button type="button" class="flex-1 flex items-center justify-center space-x-2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-3 px-4 rounded-lg transition-colors">
+                            <a href="{{ route('chat', $technician->user->id) }}" class="flex-1">
+                                <button type="button" class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-base px-5 py-3 w-full text-center flex items-center justify-center space-x-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                                    </svg>
+                                    <input type="hidden" value="{{ $technician->id }}" id="receiver_id">
+                                    <span>Send message</span>
+                                </button>
+                            </a>
+                        </div>
+                        @else
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <button data-modal-toggle="auth-modal" type="button" class="flex-1 text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 font-medium rounded-lg text-base px-5 py-3 text-center flex items-center justify-center space-x-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                                <span>Pay and Book now</span>
+                            </button>
+                            <button data-modal-toggle="auth-modal" type="button" class="flex-1 text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-base px-5 py-3 text-center flex items-center justify-center space-x-2">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
                                 </svg>
-                                <input type="hidden" value="{{ $technician->id }}" id="receiver_id">
                                 <span>Send message</span>
                             </button>
-                        </a>
-                        @else
-                        <button data-modal-toggle="auth-modal" type="button" class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-base px-5 py-3 w-full sm:w-auto text-center flex items-center justify-center space-x-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                            </svg>
-                            <span>Pay and Book now </span>
-                        </button>
-                        <button data-modal-toggle="auth-modal" type="button" class="flex-1 flex items-center justify-center space-x-2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-3 px-4 rounded-lg transition-colors">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                            </svg>
-                            
-                            <span>Send message</span>
-                        </button>
-                      
+                        </div>
                         @endauth
                     </div>
                 </div>
@@ -127,8 +225,6 @@
                 </div>
             </div>
         </div>
-
-        
 
         <!-- Section to leave a review -->
         <div class="mt-6 bg-white shadow-xl rounded-lg p-6">
@@ -179,110 +275,10 @@
             @endauth
         </div>
     </div>
-
-  
-   <!-- Comments and Reviews Section -->
-   <div class="xl:col-span-1">
-    <div class="bg-white shadow-xl rounded-lg p-6">
-        <p class="text-lg font-semibold text-gray-700">Comments and Reviews</p>
-        <div class="mt-4 space-y-4">
-            @foreach ($avis as $av)
-            <div class="flex items-start group relative" data-avis-id="{{ $av->id }}">
-                <div class="flex-shrink-0">
-                    <img class="h-10 w-10 rounded-full shadow-md" src="{{ asset('storage/' . $av->client->photo) }}" alt="User Avatar">
-                </div>
-                <div class="ml-4 flex-1">
-                    <!-- Display mode -->
-                    <div id="display-mode-{{ $av->id }}">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <p class="text-sm font-medium text-gray-900">{{ $av->client->first_name }} {{ $av->client->last_name }}</p>
-                                <p class="text-sm text-gray-500" id="comment-text-{{ $av->id }}">{{ $av->comment }}</p>
-                                <div class="flex items-center mt-1">
-                                    <span class="text-yellow-500" id="rating-display-{{ $av->id }}">
-                                        @for($i = 1; $i <= 5; $i++)
-                                            @if($i <= $av->rating) ★ @else ☆ @endif
-                                        @endfor
-                                    </span>
-                                    <span class="ml-2 text-sm text-gray-700">{{ $av->rating }}/5</span>
-                                </div>
-                            </div>
-                            <div class="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                @if(auth()->check() && auth()->user()->id == $av->client_id)
-                                    <button onclick="enableEdit({{ $av->id }})" 
-                                        class="text-blue-600 hover:text-blue-800 text-sm p-1">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                        </svg>
-                                    </button>
-                                @endif
-                                
-                                @if(auth()->check() && (auth()->user()->id == $av->client_id || auth()->user()->id == $av->technician_id))
-                                    <form method="POST" action="{{ route('delete.review', $av->id) }}" class="inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" onclick="return confirm('Are you sure you want to delete this review?')" class="text-red-600 hover:text-red-800 text-sm p-1">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                            </svg>
-                                        </button>
-                                    </form>
-                                @endif
-                            </div>
-                        </div>
-                        <p class="text-xs text-gray-400 mt-1">{{ $av->review_date->format('d M Y H:i') }}</p>
-                    </div>
-
-                    <!-- Edit mode (hidden by default) -->
-                    <div id="edit-mode-{{ $av->id }}" class="hidden">
-                        <form method="POST" action="{{ route('update.review', $av->id) }}" class="space-y-3">
-                            @csrf
-                            @method('PUT')
-                            <textarea id="edit-comment-{{ $av->id }}" 
-                                      name="comment"
-                                      class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none focus:shadow-outline"
-                                      rows="3">{{ $av->comment }}</textarea>
-                            
-                            <div class="flex items-center">
-                                <span class="mr-2 text-gray-700">Rating:</span>
-                                <div class="rating-stars flex">
-                                    @for($i = 1; $i <= 5; $i++)
-                                        <span class="star text-2xl cursor-pointer" 
-                                              data-rating="{{ $i }}" 
-                                              data-avis-id="{{ $av->id }}"
-                                              onmouseover="highlightStars(this, {{ $av->id }})"
-                                              onmouseout="resetStars({{ $av->id }})"
-                                              onclick="setRating({{ $i }}, {{ $av->id }})">
-                                            {{ $i <= $av->rating ? '★' : '☆' }}
-                                        </span>
-                                    @endfor
-                                    <input type="hidden" name="rating" id="rating-input-{{ $av->id }}" value="{{ $av->rating }}">
-                                </div>
-                            </div>
-                            
-                            <div class="flex justify-end space-x-2 mt-2">
-                                <button type="button" 
-                                        onclick="cancelEdit({{ $av->id }})" 
-                                        class="px-3 py-1 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">
-                                    Cancel
-                                </button>
-                                <button type="submit" 
-                                        class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">
-                                    Update
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            @endforeach
-        </div>
-    </div>
 </div>
-</div>
+
 <div id="auth-modal" tabindex="-1" aria-hidden="true" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
     <div class="relative bg-white rounded-lg shadow-lg w-96 p-6">
-        <!-- Changé data-modal-toggle en data-modal-hide -->
         <button type="button" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600" data-modal-hide="auth-modal">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -292,7 +288,6 @@
         <p class="mb-4"> you have to connect.</p>
         
         <div class="flex justify-end space-x-2">
-            <!-- Changé data-modal-toggle en data-modal-hide -->
             <button type="button" class="text-white bg-gray-500 hover:bg-gray-600 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-2" data-modal-hide="auth-modal">Cancel</button>
             <a href="{{ route('login') }}" class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-4 py-2">Login</a>
         </div>
@@ -301,7 +296,7 @@
 
 <!-- Script to handle star rating -->
 <script>
- function enableEdit(avisId) {
+    function enableEdit(avisId) {
         // Hide display mode
         document.getElementById(`display-mode-${avisId}`).style.display = 'none';
         // Show edit mode
@@ -351,6 +346,7 @@
         document.getElementById(`rating-input-${avisId}`).value = rating;
         resetStars(avisId); // This will now show the selected rating
     }
+    
     // Original star rating for new reviews
     document.querySelectorAll('[data-rating]').forEach(button => {
         button.addEventListener('click', () => {

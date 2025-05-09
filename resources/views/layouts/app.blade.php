@@ -19,18 +19,33 @@
 
     <title>@yield('title', 'My Application')</title>
 </head>
-<body>
+<body class="flex flex-col min-h-screen">
 
-      <!-- Message de session -->
-      @if (session('status'))
-      <div class="text-green-600 text-sm font-medium">
-          {{ session('status') }}
-      </div>
-  @endif
+    <!-- Message de session -->
+    @if (session('status'))
+    <div class="text-green-600 text-sm font-medium">
+        {{ session('status') }}
+    </div>
+    @endif
 
-    <!-- Main content -->
-    <div class="p-4 w-full md:ml-64 md:w-auto transition-all duration-300">
-        @yield('content')
+    <!-- Main content area -->
+    <div class="flex flex-1">
+        @auth
+            @if(View::hasSection('sidebar'))
+                @yield('sidebar')
+            @endif
+        @endauth
+
+        <!-- Main content wrapper -->
+        <div class="flex-1 flex flex-col">
+            <!-- Main content -->
+            <main class="flex-1 p-4 transition-all duration-300 @auth @if(View::hasSection('sidebar')) ml-0 lg:ml-64 @endif @endauth">
+                @yield('content')
+            </main>
+            
+            <!-- Footer -->
+            @include('layouts.partials.footer')
+        </div>
     </div>
 </body>
 

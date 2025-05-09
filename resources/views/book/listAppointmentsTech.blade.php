@@ -3,7 +3,9 @@
 @section('title', 'My Appointments')
 
 @include('layouts.partials.navbar-dashboard')  
-@include('layouts.partials.sidebar')  
+@section('sidebar')
+        @include('layouts.partials.sidebar')
+@endsection
 @section('content')
 <div class="container mx-auto p-4 mt-16">
     <h1 class="text-2xl font-bold mb-6">My Appointments</h1>

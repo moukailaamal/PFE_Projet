@@ -3,7 +3,9 @@
 @section('title', 'My Account')
 
 @include('layouts.partials.navbar-dashboard')  
-@include('layouts.partials.sidebar') 
+@section('sidebar')
+        @include('layouts.partials.sidebar')
+ @endsection
 
 @section('content')
     <x-slot name="header">

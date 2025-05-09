@@ -3,7 +3,9 @@
 @section('title', 'Liste des Messages')
 @section('content')
 @include('layouts.partials.navbar-dashboard')  
-@include('layouts.partials.sidebar') 
+@section('sidebar')
+        @include('layouts.partials.sidebar')
+@endsection
 
 <section class="py-5">
     <div class="container mx-auto px-4 py-5">

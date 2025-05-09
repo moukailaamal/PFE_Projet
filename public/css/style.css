@@ -162,3 +162,15 @@ input:checked + .toggle-bg {
 .fc .fc-daygrid-day-frame {
   @apply hover:bg-gray-50 cursor-pointer !important;
 }
+/* Ensure full width when no sidebar */
+.main-content-full {
+  width: 100%;
+  margin-left: 0;
+}
+
+/* Sidebar transition */
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}

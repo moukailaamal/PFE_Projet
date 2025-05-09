@@ -3,7 +3,10 @@
 @section('title', 'All Categories')
 
 @include('layouts.partials.navbar-dashboard')  
-@include('layouts.partials.sidebar') 
+@section('sidebar')
+        @include('layouts.partials.sidebar')
+    @endsection
+
 @section('content')
 <div class="p-4 bg-white block sm:flex items-center justify-between border-b border-gray-200">
     <div class="mb-1 w-full mt-16">

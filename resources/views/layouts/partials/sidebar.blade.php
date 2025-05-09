@@ -9,7 +9,7 @@
 <!-- ==================== -->
 
 <!-- Mobile toggle button -->
-<button id="sidebarToggle" class="lg:hidden fixed top-4 left-4 z-30 p-2 bg-white rounded-lg shadow-md focus:outline-none">
+<button id="sidebarToggle" class="lg:hidden sticky  top-4 left-4 z-30 p-2 bg-white rounded-lg shadow-md focus:outline-none">
     <svg class="w-6 h-6 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
     </svg>
@@ -19,9 +19,9 @@
 <div id="sidebarOverlay" class="fixed inset-0 z-10 bg-black opacity-50 hidden lg:hidden"></div>
 
 <!-- Main sidebar -->
-<aside id="sidebar" class="fixed z-20 h-full top-0 left-0 pt-16 flex flex-shrink-0 flex-col w-64 transition-transform duration-300 transform -translate-x-full lg:translate-x-0" aria-label="Sidebar">
-    <div class="relative flex-1 flex flex-col min-h-0 border-r border-gray-200 bg-white pt-0">
-        <div class="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
+<aside id="sidebar" class="fixed z-20 top-0 left-0 pt-16 h-[calc(100vh-4rem)] flex flex-shrink-0 flex-col w-64 transition-transform duration-300 transform -translate-x-full lg:translate-x-0" aria-label="Sidebar">
+    <div class="relative flex-1 flex flex-col min-h-0 border-r border-gray-200 bg-white">
+        <div class="flex-1 flex flex-col overflow-y-auto">
             <div class="flex-1 px-3 bg-white divide-y space-y-1">
                 
                 @auth
