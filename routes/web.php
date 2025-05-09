@@ -117,11 +117,13 @@ Route::prefix('admin')->middleware([
         });
         Route::get('/listAdmins', [AdminController::class, 'listAdmin'])
         ->name('admin.listAdmins');
-    
+       
     // Common admin routes
     Route::get('/listAppointments', [AdminController::class, 'listAllAppointement'])
         ->name('book.listAppointmentsAdmin');
-      
+        Route::get('/listClients', [AdminController::class, 'listClient'])
+        ->name('admin.listClients');
+
  // Technician management
  Route::prefix('technicians')->group(function() {
     Route::get('list', [AdminController::class, 'listTechnician'])
@@ -132,7 +134,8 @@ Route::prefix('admin')->middleware([
     }); 
 });
     
-
+Route::delete('/clients/{client}', [AdminController::class, 'destroyClient'])
+    ->name('admin.clients.destroy');
 Route::delete('/users/{user}', [AdminController::class, 'destroy'])
         ->name('admin.users.destroy')
         ->middleware('can:delete,user');

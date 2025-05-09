@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('receiver_id')->constrained('users')->onDelete('cascade');
             $table->text('message');
             $table->dateTime('send_date')->useCurrent();
-            $table->boolean('is_read')->default(false);
+           
             $table->enum('message_type', ['text', 'file', 'image', 'pdf'])->default('text');
             $table->timestamps();
         });

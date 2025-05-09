@@ -1,11 +1,12 @@
 @extends('layouts.app')
 
 @section('title', 'Liste des Messages')
-@section('content')
 @include('layouts.partials.navbar-dashboard')  
 @section('sidebar')
         @include('layouts.partials.sidebar')
 @endsection
+@section('content')
+
 
 <section class="py-5">
     <div class="container mx-auto px-4 py-5">

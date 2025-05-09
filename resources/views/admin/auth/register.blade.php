@@ -43,7 +43,16 @@
 
             <form class="mt-8 space-y-6" method="POST" action="{{ route('admin.register') }}">
                 @csrf
-                <input type="hidden" name="role" value="admin">
+                  <!-- role -->
+                  <div>
+                    <x-input-label for="role" :value="__('Role')" />
+                    <select name="role" id="role" class="block mt-1 w-full rounded-lg border-gray-300">
+                        <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                        <option value="superAdmin" {{ old('role') == 'SuperAdmin' ? 'selected' : '' }}>Super Admin</option>
+                    </select>
+                    <x-input-error :messages="$errors->get('role')" class="mt-2" />
+                </div>
+
                 <!-- First Name -->
                 <div>
                     <x-input-label for="first_name" :value="__('First Name')" />

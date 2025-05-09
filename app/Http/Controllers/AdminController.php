@@ -30,9 +30,25 @@ class AdminController extends Controller
         return redirect()->route('home')
             ->with('success', 'Account deleted successfully');
     }
+    public function listClient() 
+    {
+        $clients = User::where('role', 'client')->paginate(10); 
+        return view('admin.listClients', compact('clients'));
+    }
+
+    public function destroyClient($id)
+    {
+        $client = User::find($id);
+        
+        if(auth()->user()->role == "admin" || auth()->user()->role == "superAdmin") {
+            $client->delete();
+        }
+        
+        return redirect()->route('admin.listClients')->with('success', 'The client is successfully deleted');
+    }
     public function listAdmin() 
     {
-        $admins = User::where('role', 'admin')->paginate(10); 
+        $admins = User::whereIn('role', ['admin', 'superAdmin'])->paginate(10);
         return view('admin.listAdmins', compact('admins'));
     }
     public function listTechnician() 
@@ -51,7 +67,7 @@ class AdminController extends Controller
         return view('admin.listsAllAppointments', compact('users', 'reservations'));
     }
  
-    
+ 
     
 
     public function updateTechnicianStatus(Request $request, $id)
@@ -77,6 +93,7 @@ class AdminController extends Controller
                 ->with('error', 'An error occurred: ' . $e->getMessage());
         }
     }
+
     
     
 }

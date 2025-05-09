@@ -65,6 +65,8 @@ public function register(Request $request)
         'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
         'password' => ['required', 'confirmed', Rules\Password::defaults()],
         'gender' => ['required', 'string', 'in:male,female,other'],
+        'role' => ['required', 'string', 'in:admin,superAdmin'],
+
         'address' => ['required', 'string', 'max:255'],
         'phone_number' => ['required', 'string', 'max:20'],
     ]);
@@ -77,7 +79,7 @@ public function register(Request $request)
         'address' => $validated['address'],
         'phone_number' => $validated['phone_number'],
         'password' => Hash::make($validated['password']),
-        'role' => 'admin',
+        'role' => $validated['role'],
         'status' => 'active',
         'registration_date' => now(),
         'email_verified_at' => now(),

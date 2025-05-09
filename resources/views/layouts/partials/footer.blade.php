@@ -3,7 +3,11 @@
         <div class="flex flex-col items-center text-center">
             <!-- Logo/Brand -->
             <div class="mb-4">
-                <h2 class="text-2xl font-bold">TuniRepair</h2>
+                <a href="{{ route('home') }}" class="text-xl font-bold flex items-center lg:ml-2.5">
+                    <img src="{{ asset('images/logo.svg') }}" class="h-6 mr-2" alt="Tuni Repair Logo">
+                    <h2 class="text-2xl font-bold">TuniRepair</h2>
+                  </a>
+              
                 <p class="text-gray-400 mt-1">Your trusted repair service</p>
             </div>
             
